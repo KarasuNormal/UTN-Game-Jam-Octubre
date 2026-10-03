@@ -1037,7 +1037,7 @@ GameObject:
   - component: {fileID: 5885216827943657505}
   - component: {fileID: 135756642000475821}
   - component: {fileID: 4416926081852918493}
-  - component: {fileID: 8280892174446733046}
+  - component: {fileID: 888424866559211425}
   m_Layer: 8
   m_Name: PlayerArmature
   m_TagString: Player
@@ -1289,7 +1289,7 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &8280892174446733046
+--- !u!114 &888424866559211425
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1303,9 +1303,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   holdPoint: {fileID: 2769057250902518475}
   cameraTransform: {fileID: 0}
-  pickupRadius: 1.1
-  pickupHeight: 1.2
-  pickupForwardOffset: 0.2
+  pickupRadius: 1.2
+  pickupHeight: 1
+  pickupForwardOffset: 0.8
   throwForce: 12
   pickupLayer:
     serializedVersion: 2
