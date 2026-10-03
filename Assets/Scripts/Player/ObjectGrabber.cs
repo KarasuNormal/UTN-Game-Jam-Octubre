@@ -101,6 +101,8 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
+            if (!hit.CompareTag("Pickup")) continue;
+
             ThrowableObject throwable = hit.GetComponentInParent<ThrowableObject>();
 
             if (throwable != null && throwable.IsLocked())

@@ -2294,7 +2294,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1272576480030143787, guid: 58745cec9cdf05b4ebc849f5b2e65656, type: 3}
       propertyPath: m_Name
-      value: Cube
+      value: Victory
       objectReference: {fileID: 0}
     - target: {fileID: 1797905947557773576, guid: 58745cec9cdf05b4ebc849f5b2e65656, type: 3}
       propertyPath: victoryPanel
