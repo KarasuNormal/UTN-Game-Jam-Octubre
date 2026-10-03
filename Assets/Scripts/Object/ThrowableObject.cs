@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ThrowableObject : MonoBehaviour
 {
@@ -7,20 +8,34 @@ public class ThrowableObject : MonoBehaviour
     private Rigidbody rb;
     private bool wasThrown;
     private bool isLocked;
+    private bool canBePlaced;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
+    private void Update()
+    {
+        if (!wasThrown || isLocked || !canBePlaced)
+            return;
+
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            LockObject();
+        }
+    }
+
     public void SetHeld()
     {
         wasThrown = false;
+        canBePlaced = false;
     }
 
     public void SetDropped()
     {
         wasThrown = false;
+        canBePlaced = false;
     }
 
     public void SetThrown()
@@ -33,17 +48,6 @@ public class ThrowableObject : MonoBehaviour
         return isLocked;
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!wasThrown || isLocked)
-            return;
-
-        if (collision.gameObject.CompareTag(bridgeTag))
-        {
-            LockObject();
-        }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (!wasThrown || isLocked)
@@ -51,7 +55,18 @@ public class ThrowableObject : MonoBehaviour
 
         if (other.CompareTag(bridgeTag))
         {
-            LockObject();
+            canBePlaced = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (isLocked)
+            return;
+
+        if (other.CompareTag(bridgeTag))
+        {
+            canBePlaced = false;
         }
     }
 
@@ -59,6 +74,7 @@ public class ThrowableObject : MonoBehaviour
     {
         isLocked = true;
         wasThrown = false;
+        canBePlaced = false;
 
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
