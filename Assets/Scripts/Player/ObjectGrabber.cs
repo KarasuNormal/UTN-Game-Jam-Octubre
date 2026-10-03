@@ -8,7 +8,13 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float pickupRadius = 1.2f;
     [SerializeField] private float pickupHeight = 1f;
     [SerializeField] private float pickupForwardOffset = 0.8f;
-    [SerializeField] private float throwForce = 12f;
+
+    [Header("Throw Settings")]
+    [SerializeField] private float minThrowForce = 5f;
+    [SerializeField] private float maxThrowForce = 20f;
+    [SerializeField] private float throwChargeInterval = 0.1f;
+
+    [Header("Pickup")]
     [SerializeField] private LayerMask pickupLayer;
 
     [Header("Trajectory Settings")]
@@ -19,6 +25,10 @@ public class ObjectGrabber : MonoBehaviour
     private Rigidbody heldObject;
     private Collider[] heldColliders;
 
+    private float currentThrowForce;
+    private float throwChargeTimer;
+    private bool isChargingThrow;
+
     private void Update()
     {
         if (Keyboard.current.eKey.wasPressedThisFrame)
@@ -27,20 +37,22 @@ public class ObjectGrabber : MonoBehaviour
             {
                 TryPickup();
             }
-            else
+            else if (!isChargingThrow)
             {
                 DropObject();
             }
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame && heldObject != null)
-        {
-            ThrowObject();
-        }
-
         if (heldObject != null)
         {
-            DrawTrajectory();
+            HandleThrowInput();
+
+            // HandleThrowInput puede haber lanzado el objeto.
+            // Por eso volvemos a comprobar heldObject.
+            if (heldObject != null)
+            {
+                DrawTrajectory();
+            }
         }
         else if (trajectoryLine != null && trajectoryLine.enabled)
         {
@@ -48,15 +60,63 @@ public class ObjectGrabber : MonoBehaviour
         }
     }
 
+    private void HandleThrowInput()
+    {
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            StartThrowCharge();
+        }
+
+        if (isChargingThrow)
+        {
+            ChargeThrow();
+        }
+
+        if (Mouse.current.leftButton.wasReleasedThisFrame && isChargingThrow)
+        {
+            ThrowObject();
+        }
+    }
+
+    private void StartThrowCharge()
+    {
+        isChargingThrow = true;
+        currentThrowForce = minThrowForce;
+        throwChargeTimer = 0f;
+
+        Debug.Log($"Throw charge started. Power: {currentThrowForce}");
+    }
+
+    private void ChargeThrow()
+    {
+        throwChargeTimer += Time.deltaTime;
+
+        if (throwChargeTimer < throwChargeInterval)
+            return;
+
+        throwChargeTimer -= throwChargeInterval;
+
+        if (currentThrowForce < maxThrowForce)
+        {
+            currentThrowForce += 1f;
+
+            if (currentThrowForce > maxThrowForce)
+                currentThrowForce = maxThrowForce;
+
+            Debug.Log($"Throw power: {currentThrowForce}");
+        }
+    }
+
     private void DrawTrajectory()
     {
+        if (heldObject == null) return;
         if (trajectoryLine == null) return;
 
         trajectoryLine.enabled = true;
         trajectoryLine.positionCount = lineSegments;
 
         Vector3 startPosition = holdPoint.position;
-        Vector3 startVelocity = (cameraTransform.forward * throwForce) / heldObject.mass;
+        Vector3 startVelocity = (cameraTransform.forward * currentThrowForce) / heldObject.mass;
 
         Vector3 currentPosition = startPosition;
         trajectoryLine.SetPosition(0, currentPosition);
@@ -101,22 +161,26 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (!hit.CompareTag("Pickup")) continue;
+            if (!hit.CompareTag("Pickup"))
+                continue;
 
-            ThrowableObject throwable = hit.GetComponentInParent<ThrowableObject>();
+            ThrowableObject throwable =
+                hit.GetComponentInParent<ThrowableObject>();
 
             if (throwable != null && throwable.IsLocked())
                 continue;
 
-            Rigidbody rb = hit.GetComponentInParent<Rigidbody>();
+            Rigidbody rb =
+                hit.GetComponentInParent<Rigidbody>();
 
             if (rb == null)
                 continue;
 
-            float distance = Vector3.Distance(
-                transform.position,
-                rb.transform.position
-            );
+            float distance =
+                Vector3.Distance(
+                    transform.position,
+                    rb.transform.position
+                );
 
             if (distance < closestDistance)
             {
@@ -140,7 +204,8 @@ public class ObjectGrabber : MonoBehaviour
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
 
-        heldColliders = heldObject.GetComponentsInChildren<Collider>();
+        heldColliders =
+            heldObject.GetComponentsInChildren<Collider>();
 
         foreach (Collider col in heldColliders)
         {
@@ -150,11 +215,15 @@ public class ObjectGrabber : MonoBehaviour
         heldObject.transform.SetParent(holdPoint);
         heldObject.transform.localPosition = Vector3.zero;
         heldObject.transform.localRotation = Quaternion.identity;
+
+        currentThrowForce = minThrowForce;
+        isChargingThrow = false;
     }
 
     private void DropObject()
     {
-        ThrowableObject throwable = heldObject.GetComponent<ThrowableObject>();
+        ThrowableObject throwable =
+            heldObject.GetComponent<ThrowableObject>();
 
         if (throwable != null)
             throwable.SetDropped();
@@ -165,11 +234,15 @@ public class ObjectGrabber : MonoBehaviour
         EnableColliders();
 
         heldObject = null;
+
+        isChargingThrow = false;
+        currentThrowForce = minThrowForce;
     }
 
     private void ThrowObject()
     {
         Rigidbody objectToThrow = heldObject;
+
         ThrowableObject throwable =
             objectToThrow.GetComponent<ThrowableObject>();
 
@@ -184,9 +257,14 @@ public class ObjectGrabber : MonoBehaviour
             throwable.SetThrown();
 
         objectToThrow.AddForce(
-            cameraTransform.forward * throwForce,
+            cameraTransform.forward * currentThrowForce,
             ForceMode.Impulse
         );
+
+        Debug.Log($"Object thrown with power: {currentThrowForce}");
+
+        isChargingThrow = false;
+        currentThrowForce = minThrowForce;
     }
 
     private void EnableColliders()
