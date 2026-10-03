@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ObjectGrabber : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float minThrowForce = 5f;
     [SerializeField] private float maxThrowForce = 20f;
     [SerializeField] private float throwChargeInterval = 0.1f;
+
+    [Header("UI Settings")]
+    [SerializeField] private Slider throwPowerSlider;
 
     [Header("Pickup")]
     [SerializeField] private LayerMask pickupLayer;
@@ -28,6 +32,14 @@ public class ObjectGrabber : MonoBehaviour
     private float currentThrowForce;
     private float throwChargeTimer;
     private bool isChargingThrow;
+
+    private void Start()
+    {
+        if (throwPowerSlider != null)
+        {
+            throwPowerSlider.gameObject.SetActive(false);
+        }
+    }
 
     private void Update()
     {
@@ -47,8 +59,6 @@ public class ObjectGrabber : MonoBehaviour
         {
             HandleThrowInput();
 
-            // HandleThrowInput puede haber lanzado el objeto.
-            // Por eso volvemos a comprobar heldObject.
             if (heldObject != null)
             {
                 DrawTrajectory();
@@ -57,6 +67,11 @@ public class ObjectGrabber : MonoBehaviour
         else if (trajectoryLine != null && trajectoryLine.enabled)
         {
             trajectoryLine.enabled = false;
+        }
+
+        if (heldObject != null && isChargingThrow && throwPowerSlider != null)
+        {
+            throwPowerSlider.value = currentThrowForce;
         }
     }
 
@@ -84,7 +99,13 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
         throwChargeTimer = 0f;
 
-        Debug.Log($"Throw charge started. Power: {currentThrowForce}");
+        if (throwPowerSlider != null)
+        {
+            throwPowerSlider.gameObject.SetActive(true);
+            throwPowerSlider.minValue = minThrowForce;
+            throwPowerSlider.maxValue = maxThrowForce;
+            throwPowerSlider.value = currentThrowForce;
+        }
     }
 
     private void ChargeThrow()
@@ -103,7 +124,10 @@ public class ObjectGrabber : MonoBehaviour
             if (currentThrowForce > maxThrowForce)
                 currentThrowForce = maxThrowForce;
 
-            Debug.Log($"Throw power: {currentThrowForce}");
+            if (throwPowerSlider != null)
+            {
+                throwPowerSlider.value = currentThrowForce;
+            }
         }
     }
 
@@ -164,23 +188,18 @@ public class ObjectGrabber : MonoBehaviour
             if (!hit.CompareTag("Pickup"))
                 continue;
 
-            ThrowableObject throwable =
-                hit.GetComponentInParent<ThrowableObject>();
+            // Uso de método no genérico con typeof
+            ThrowableObject throwable = hit.transform.GetComponentInParent(typeof(ThrowableObject)) as ThrowableObject;
 
             if (throwable != null && throwable.IsLocked())
                 continue;
 
-            Rigidbody rb =
-                hit.GetComponentInParent<Rigidbody>();
+            Rigidbody rb = hit.transform.GetComponentInParent(typeof(Rigidbody)) as Rigidbody;
 
             if (rb == null)
                 continue;
 
-            float distance =
-                Vector3.Distance(
-                    transform.position,
-                    rb.transform.position
-                );
+            float distance = Vector3.Distance(transform.position, rb.transform.position);
 
             if (distance < closestDistance)
             {
@@ -194,8 +213,8 @@ public class ObjectGrabber : MonoBehaviour
 
         heldObject = closestObject;
 
-        ThrowableObject selectedThrowable =
-            heldObject.GetComponent<ThrowableObject>();
+        // Uso de método no genérico con typeof
+        ThrowableObject selectedThrowable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
         if (selectedThrowable != null)
             selectedThrowable.SetHeld();
@@ -204,12 +223,18 @@ public class ObjectGrabber : MonoBehaviour
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
 
-        heldColliders =
-            heldObject.GetComponentsInChildren<Collider>();
+        // Obtener colliders hijos de forma no genérica
+        Component[] rawColliders = heldObject.gameObject.GetComponentsInChildren(typeof(Collider));
+        heldColliders = new Collider[rawColliders.Length];
+        for (int i = 0; i < rawColliders.Length; i++)
+        {
+            heldColliders[i] = rawColliders[i] as Collider;
+        }
 
         foreach (Collider col in heldColliders)
         {
-            col.enabled = false;
+            if (col != null)
+                col.enabled = false;
         }
 
         heldObject.transform.SetParent(holdPoint);
@@ -222,49 +247,56 @@ public class ObjectGrabber : MonoBehaviour
 
     private void DropObject()
     {
-        ThrowableObject throwable =
-            heldObject.GetComponent<ThrowableObject>();
+        if (heldObject != null)
+        {
+            ThrowableObject throwable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
-        if (throwable != null)
-            throwable.SetDropped();
+            if (throwable != null)
+                throwable.SetDropped();
 
-        heldObject.transform.SetParent(null);
-        heldObject.isKinematic = false;
+            heldObject.transform.SetParent(null);
+            heldObject.isKinematic = false;
+        }
 
         EnableColliders();
-
         heldObject = null;
 
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
+
+        if (throwPowerSlider != null)
+            throwPowerSlider.gameObject.SetActive(false);
     }
 
     private void ThrowObject()
     {
         Rigidbody objectToThrow = heldObject;
 
-        ThrowableObject throwable =
-            objectToThrow.GetComponent<ThrowableObject>();
+        if (objectToThrow != null)
+        {
+            ThrowableObject throwable = objectToThrow.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
-        objectToThrow.transform.SetParent(null);
-        objectToThrow.isKinematic = false;
+            objectToThrow.transform.SetParent(null);
+            objectToThrow.isKinematic = false;
 
-        EnableColliders();
+            EnableColliders();
 
-        heldObject = null;
+            heldObject = null;
 
-        if (throwable != null)
-            throwable.SetThrown();
+            if (throwable != null)
+                throwable.SetThrown();
 
-        objectToThrow.AddForce(
-            cameraTransform.forward * currentThrowForce,
-            ForceMode.Impulse
-        );
-
-        Debug.Log($"Object thrown with power: {currentThrowForce}");
+            objectToThrow.AddForce(
+                cameraTransform.forward * currentThrowForce,
+                ForceMode.Impulse
+            );
+        }
 
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
+
+        if (throwPowerSlider != null)
+            throwPowerSlider.gameObject.SetActive(false);
     }
 
     private void EnableColliders()
@@ -274,7 +306,8 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider col in heldColliders)
         {
-            col.enabled = true;
+            if (col != null)
+                col.enabled = true;
         }
 
         heldColliders = null;
