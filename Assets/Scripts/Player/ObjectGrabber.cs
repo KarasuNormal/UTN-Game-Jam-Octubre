@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ObjectGrabber : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float maxThrowForce = 20f;
     [SerializeField] private float throwChargeInterval = 0.1f;
 
+    [Header("UI Settings")]
+    [SerializeField] private Slider throwPowerSlider;
+
     [Header("Pickup")]
     [SerializeField] private LayerMask pickupLayer;
 
@@ -22,12 +26,28 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private int lineSegments = 30;
     [SerializeField] private float timeStep = 0.05f;
 
+    [Header("Rotation & Magic Float")]
+    [SerializeField] private float rotationSpeed = 20f;
+    [SerializeField] private float floatAmplitude = 0.1f;
+    [SerializeField] private float floatSpeed = 2f;
+
+    public bool IsRotatingObject { get; private set; }
+
     private Rigidbody heldObject;
     private Collider[] heldColliders;
 
     private float currentThrowForce;
     private float throwChargeTimer;
     private bool isChargingThrow;
+    private float magicFloatTimer;
+
+    private void Start()
+    {
+        if (throwPowerSlider != null)
+        {
+            throwPowerSlider.gameObject.SetActive(false);
+        }
+    }
 
     private void Update()
     {
@@ -45,19 +65,62 @@ public class ObjectGrabber : MonoBehaviour
 
         if (heldObject != null)
         {
-            HandleThrowInput();
+            // Chequear si mantenemos click derecho
+            IsRotatingObject = Mouse.current.rightButton.isPressed;
 
-            // HandleThrowInput puede haber lanzado el objeto.
-            // Por eso volvemos a comprobar heldObject.
+            if (IsRotatingObject)
+            {
+                HandleRotation();
+            }
+            else
+            {
+                HandleFloatingEffect();
+            }
+
+            // Solo permitimos cargar o lanzar si NO estamos rotando el objeto
+            if (!IsRotatingObject)
+            {
+                HandleThrowInput();
+            }
+            else if (isChargingThrow)
+            {
+                // Si empezó a rotar mientras cargaba el tiro, cancelamos la carga
+                CancelThrowCharge();
+            }
+
             if (heldObject != null)
             {
                 DrawTrajectory();
             }
         }
-        else if (trajectoryLine != null && trajectoryLine.enabled)
+        else
         {
-            trajectoryLine.enabled = false;
+            IsRotatingObject = false;
+            if (trajectoryLine != null && trajectoryLine.enabled)
+            {
+                trajectoryLine.enabled = false;
+            }
         }
+
+        // Actualizar UI del slider si está cargando
+        if (heldObject != null && isChargingThrow && throwPowerSlider != null)
+        {
+            throwPowerSlider.value = currentThrowForce;
+        }
+    }
+
+    private void HandleRotation()
+    {
+        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+        heldObject.transform.Rotate(cameraTransform.up, -mouseDelta.x * rotationSpeed * Time.deltaTime, Space.World);
+        heldObject.transform.Rotate(cameraTransform.right, mouseDelta.y * rotationSpeed * Time.deltaTime, Space.World);
+    }
+
+    private void HandleFloatingEffect()
+    {
+        magicFloatTimer += Time.deltaTime;
+        float offsetY = Mathf.Sin(magicFloatTimer * floatSpeed) * floatAmplitude;
+        heldObject.transform.localPosition = new Vector3(0, offsetY, 0);
     }
 
     private void HandleThrowInput()
@@ -84,7 +147,13 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
         throwChargeTimer = 0f;
 
-        Debug.Log($"Throw charge started. Power: {currentThrowForce}");
+        if (throwPowerSlider != null)
+        {
+            throwPowerSlider.gameObject.SetActive(true);
+            throwPowerSlider.minValue = minThrowForce;
+            throwPowerSlider.maxValue = maxThrowForce;
+            throwPowerSlider.value = currentThrowForce;
+        }
     }
 
     private void ChargeThrow()
@@ -103,7 +172,20 @@ public class ObjectGrabber : MonoBehaviour
             if (currentThrowForce > maxThrowForce)
                 currentThrowForce = maxThrowForce;
 
-            Debug.Log($"Throw power: {currentThrowForce}");
+            if (throwPowerSlider != null)
+            {
+                throwPowerSlider.value = currentThrowForce;
+            }
+        }
+    }
+
+    private void CancelThrowCharge()
+    {
+        isChargingThrow = false;
+        currentThrowForce = minThrowForce;
+        if (throwPowerSlider != null)
+        {
+            throwPowerSlider.gameObject.SetActive(false);
         }
     }
 
@@ -116,6 +198,7 @@ public class ObjectGrabber : MonoBehaviour
         trajectoryLine.positionCount = lineSegments;
 
         Vector3 startPosition = holdPoint.position;
+        // Ahora la trayectoria calcula el arco usando la fuerza que se está cargando en tiempo real
         Vector3 startVelocity = (cameraTransform.forward * currentThrowForce) / heldObject.mass;
 
         Vector3 currentPosition = startPosition;
@@ -161,26 +244,19 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (!hit.CompareTag("Pickup"))
-                continue;
+            // ¡ELIMINADA LA VERIFICACIÓN DEL TAG AQUÍ!
 
-            ThrowableObject throwable =
-                hit.GetComponentInParent<ThrowableObject>();
+            ThrowableObject throwable = hit.transform.GetComponentInParent(typeof(ThrowableObject)) as ThrowableObject;
 
             if (throwable != null && throwable.IsLocked())
                 continue;
 
-            Rigidbody rb =
-                hit.GetComponentInParent<Rigidbody>();
+            Rigidbody rb = hit.transform.GetComponentInParent(typeof(Rigidbody)) as Rigidbody;
 
             if (rb == null)
                 continue;
 
-            float distance =
-                Vector3.Distance(
-                    transform.position,
-                    rb.transform.position
-                );
+            float distance = Vector3.Distance(transform.position, rb.transform.position);
 
             if (distance < closestDistance)
             {
@@ -194,8 +270,7 @@ public class ObjectGrabber : MonoBehaviour
 
         heldObject = closestObject;
 
-        ThrowableObject selectedThrowable =
-            heldObject.GetComponent<ThrowableObject>();
+        ThrowableObject selectedThrowable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
         if (selectedThrowable != null)
             selectedThrowable.SetHeld();
@@ -204,12 +279,17 @@ public class ObjectGrabber : MonoBehaviour
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
 
-        heldColliders =
-            heldObject.GetComponentsInChildren<Collider>();
+        Component[] rawColliders = heldObject.gameObject.GetComponentsInChildren(typeof(Collider));
+        heldColliders = new Collider[rawColliders.Length];
+        for (int i = 0; i < rawColliders.Length; i++)
+        {
+            heldColliders[i] = rawColliders[i] as Collider;
+        }
 
         foreach (Collider col in heldColliders)
         {
-            col.enabled = false;
+            if (col != null)
+                col.enabled = false;
         }
 
         heldObject.transform.SetParent(holdPoint);
@@ -218,53 +298,61 @@ public class ObjectGrabber : MonoBehaviour
 
         currentThrowForce = minThrowForce;
         isChargingThrow = false;
+        magicFloatTimer = 0f; // Reiniciar el timer de levitación para que empiece prolijo
     }
 
     private void DropObject()
     {
-        ThrowableObject throwable =
-            heldObject.GetComponent<ThrowableObject>();
+        if (heldObject != null)
+        {
+            ThrowableObject throwable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
-        if (throwable != null)
-            throwable.SetDropped();
+            if (throwable != null)
+                throwable.SetDropped();
 
-        heldObject.transform.SetParent(null);
-        heldObject.isKinematic = false;
+            heldObject.transform.SetParent(null);
+            heldObject.isKinematic = false;
+        }
 
         EnableColliders();
-
         heldObject = null;
 
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
+
+        if (throwPowerSlider != null)
+            throwPowerSlider.gameObject.SetActive(false);
     }
 
     private void ThrowObject()
     {
         Rigidbody objectToThrow = heldObject;
 
-        ThrowableObject throwable =
-            objectToThrow.GetComponent<ThrowableObject>();
+        if (objectToThrow != null)
+        {
+            ThrowableObject throwable = objectToThrow.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
-        objectToThrow.transform.SetParent(null);
-        objectToThrow.isKinematic = false;
+            objectToThrow.transform.SetParent(null);
+            objectToThrow.isKinematic = false;
 
-        EnableColliders();
+            EnableColliders();
 
-        heldObject = null;
+            heldObject = null;
 
-        if (throwable != null)
-            throwable.SetThrown();
+            if (throwable != null)
+                throwable.SetThrown();
 
-        objectToThrow.AddForce(
-            cameraTransform.forward * currentThrowForce,
-            ForceMode.Impulse
-        );
-
-        Debug.Log($"Object thrown with power: {currentThrowForce}");
+            objectToThrow.AddForce(
+                cameraTransform.forward * currentThrowForce,
+                ForceMode.Impulse
+            );
+        }
 
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
+
+        if (throwPowerSlider != null)
+            throwPowerSlider.gameObject.SetActive(false);
     }
 
     private void EnableColliders()
@@ -274,7 +362,8 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider col in heldColliders)
         {
-            col.enabled = true;
+            if (col != null)
+                col.enabled = true;
         }
 
         heldColliders = null;
