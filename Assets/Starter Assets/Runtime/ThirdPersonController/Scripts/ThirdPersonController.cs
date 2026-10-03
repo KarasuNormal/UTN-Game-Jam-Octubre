@@ -107,6 +107,8 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
+        private ObjectGrabber _objectGrabber;
+
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -141,6 +143,8 @@ namespace StarterAssets
 
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
+
+            _objectGrabber = GetComponent<ObjectGrabber>();
 #else
             Debug.LogError("Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
@@ -198,6 +202,11 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            if (_objectGrabber != null && _objectGrabber.IsRotatingObject)
+            {
+                _input.look = Vector2.zero;
+            }
+
             if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;

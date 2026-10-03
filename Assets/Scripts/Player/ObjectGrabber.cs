@@ -26,12 +26,20 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private int lineSegments = 30;
     [SerializeField] private float timeStep = 0.05f;
 
+    [Header("Rotation & Magic Float")]
+    [SerializeField] private float rotationSpeed = 20f;
+    [SerializeField] private float floatAmplitude = 0.1f;
+    [SerializeField] private float floatSpeed = 2f;
+
+    public bool IsRotatingObject { get; private set; }
+
     private Rigidbody heldObject;
     private Collider[] heldColliders;
 
     private float currentThrowForce;
     private float throwChargeTimer;
     private bool isChargingThrow;
+    private float magicFloatTimer;
 
     private void Start()
     {
@@ -57,22 +65,58 @@ public class ObjectGrabber : MonoBehaviour
 
         if (heldObject != null)
         {
-            HandleThrowInput();
+            IsRotatingObject = Mouse.current.rightButton.isPressed;
+
+            if (IsRotatingObject)
+            {
+                HandleRotation();
+            }
+            else
+            {
+                HandleFloatingEffect();
+            }
+
+            if (!IsRotatingObject)
+            {
+                HandleThrowInput();
+            }
+            else if (isChargingThrow)
+            {
+                CancelThrowCharge();
+            }
 
             if (heldObject != null)
             {
                 DrawTrajectory();
             }
         }
-        else if (trajectoryLine != null && trajectoryLine.enabled)
+        else
         {
-            trajectoryLine.enabled = false;
+            IsRotatingObject = false;
+            if (trajectoryLine != null && trajectoryLine.enabled)
+            {
+                trajectoryLine.enabled = false;
+            }
         }
 
         if (heldObject != null && isChargingThrow && throwPowerSlider != null)
         {
             throwPowerSlider.value = currentThrowForce;
         }
+    }
+
+    private void HandleRotation()
+    {
+        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+        heldObject.transform.Rotate(cameraTransform.up, -mouseDelta.x * rotationSpeed * Time.deltaTime, Space.World);
+        heldObject.transform.Rotate(cameraTransform.right, mouseDelta.y * rotationSpeed * Time.deltaTime, Space.World);
+    }
+
+    private void HandleFloatingEffect()
+    {
+        magicFloatTimer += Time.deltaTime;
+        float offsetY = Mathf.Sin(magicFloatTimer * floatSpeed) * floatAmplitude;
+        heldObject.transform.localPosition = new Vector3(0, offsetY, 0);
     }
 
     private void HandleThrowInput()
@@ -131,6 +175,16 @@ public class ObjectGrabber : MonoBehaviour
         }
     }
 
+    private void CancelThrowCharge()
+    {
+        isChargingThrow = false;
+        currentThrowForce = minThrowForce;
+        if (throwPowerSlider != null)
+        {
+            throwPowerSlider.gameObject.SetActive(false);
+        }
+    }
+
     private void DrawTrajectory()
     {
         if (heldObject == null) return;
@@ -185,10 +239,7 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (!hit.CompareTag("Pickup"))
-                continue;
 
-            // Uso de método no genérico con typeof
             ThrowableObject throwable = hit.transform.GetComponentInParent(typeof(ThrowableObject)) as ThrowableObject;
 
             if (throwable != null && throwable.IsLocked())
@@ -213,7 +264,6 @@ public class ObjectGrabber : MonoBehaviour
 
         heldObject = closestObject;
 
-        // Uso de método no genérico con typeof
         ThrowableObject selectedThrowable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
         if (selectedThrowable != null)
@@ -223,7 +273,6 @@ public class ObjectGrabber : MonoBehaviour
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
 
-        // Obtener colliders hijos de forma no genérica
         Component[] rawColliders = heldObject.gameObject.GetComponentsInChildren(typeof(Collider));
         heldColliders = new Collider[rawColliders.Length];
         for (int i = 0; i < rawColliders.Length; i++)
@@ -243,6 +292,7 @@ public class ObjectGrabber : MonoBehaviour
 
         currentThrowForce = minThrowForce;
         isChargingThrow = false;
+        magicFloatTimer = 0f;
     }
 
     private void DropObject()
