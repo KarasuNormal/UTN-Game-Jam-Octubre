@@ -11,6 +11,11 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float throwForce = 12f;
     [SerializeField] private LayerMask pickupLayer;
 
+    [Header("Trajectory Settings")]
+    [SerializeField] private LineRenderer trajectoryLine;
+    [SerializeField] private int lineSegments = 30;
+    [SerializeField] private float timeStep = 0.05f;
+
     private Rigidbody heldObject;
     private Collider[] heldColliders;
 
@@ -31,6 +36,47 @@ public class ObjectGrabber : MonoBehaviour
         if (Mouse.current.leftButton.wasPressedThisFrame && heldObject != null)
         {
             ThrowObject();
+        }
+
+        if (heldObject != null)
+        {
+            DrawTrajectory();
+        }
+        else if (trajectoryLine != null && trajectoryLine.enabled)
+        {
+            trajectoryLine.enabled = false;
+        }
+    }
+
+    private void DrawTrajectory()
+    {
+        if (trajectoryLine == null) return;
+
+        trajectoryLine.enabled = true;
+        trajectoryLine.positionCount = lineSegments;
+
+        Vector3 startPosition = holdPoint.position;
+        Vector3 startVelocity = (cameraTransform.forward * throwForce) / heldObject.mass;
+
+        Vector3 currentPosition = startPosition;
+        trajectoryLine.SetPosition(0, currentPosition);
+
+        for (int i = 1; i < lineSegments; i++)
+        {
+            float timeOffset = i * timeStep;
+
+            Vector3 gravityOffset = 0.5f * Physics.gravity * Mathf.Pow(timeOffset, 2);
+            Vector3 nextPosition = startPosition + startVelocity * timeOffset + gravityOffset;
+
+            if (Physics.Linecast(currentPosition, nextPosition, out RaycastHit hit))
+            {
+                trajectoryLine.positionCount = i + 1;
+                trajectoryLine.SetPosition(i, hit.point);
+                break;
+            }
+
+            trajectoryLine.SetPosition(i, nextPosition);
+            currentPosition = nextPosition;
         }
     }
 
