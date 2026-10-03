@@ -266,9 +266,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1451177316684033847, guid: becfee201e523054395430b779bb04ce, type: 3}
+      propertyPath: UVModule.tilesX
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451177316684033847, guid: becfee201e523054395430b779bb04ce, type: 3}
+      propertyPath: UVModule.tilesY
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451177316684033847, guid: becfee201e523054395430b779bb04ce, type: 3}
+      propertyPath: UVModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451177316684033847, guid: becfee201e523054395430b779bb04ce, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3370918840798665545, guid: becfee201e523054395430b779bb04ce, type: 3}
       propertyPath: m_Name
       value: Bridge
+      objectReference: {fileID: 0}
+    - target: {fileID: 4388370331909625570, guid: becfee201e523054395430b779bb04ce, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 75666bafa7f7243d7a69ef0cb5137fe7, type: 2}
+    - target: {fileID: 5350878993007747568, guid: becfee201e523054395430b779bb04ce, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.334
       objectReference: {fileID: 0}
     - target: {fileID: 8818722582559456667, guid: becfee201e523054395430b779bb04ce, type: 3}
       propertyPath: m_LocalPosition.x
