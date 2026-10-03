@@ -3,23 +3,19 @@ using UnityEngine.InputSystem;
 
 public class ObjectGrabber : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform holdPoint;
-
-    [Header("Pickup")]
-    [SerializeField] private float pickupDistance = 3f;
-    [SerializeField] private LayerMask pickupLayer;
-
-    [Header("Throw")]
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private float pickupRadius = 1.2f;
+    [SerializeField] private float pickupHeight = 1f;
+    [SerializeField] private float pickupForwardOffset = 0.8f;
     [SerializeField] private float throwForce = 12f;
+    [SerializeField] private LayerMask pickupLayer;
 
     private Rigidbody heldObject;
     private Collider[] heldColliders;
 
     private void Update()
     {
-        
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             if (heldObject == null)
@@ -32,7 +28,6 @@ public class ObjectGrabber : MonoBehaviour
             }
         }
 
-        
         if (Mouse.current.leftButton.wasPressedThisFrame && heldObject != null)
         {
             ThrowObject();
@@ -41,42 +36,82 @@ public class ObjectGrabber : MonoBehaviour
 
     private void TryPickup()
     {
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        Vector3 detectionPosition =
+            transform.position +
+            Vector3.up * pickupHeight +
+            transform.forward * pickupForwardOffset;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, pickupDistance, pickupLayer))
+        Collider[] hits = Physics.OverlapSphere(
+            detectionPosition,
+            pickupRadius,
+            pickupLayer
+        );
+
+        if (hits.Length == 0)
+            return;
+
+        Rigidbody closestObject = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Collider hit in hits)
         {
-            Rigidbody rb = hit.collider.GetComponentInParent<Rigidbody>();
+            ThrowableObject throwable = hit.GetComponentInParent<ThrowableObject>();
+
+            if (throwable != null && throwable.IsLocked())
+                continue;
+
+            Rigidbody rb = hit.GetComponentInParent<Rigidbody>();
 
             if (rb == null)
-                return;
+                continue;
 
-            heldObject = rb;
+            float distance = Vector3.Distance(
+                transform.position,
+                rb.transform.position
+            );
 
-          
-            heldObject.isKinematic = true;
-            heldObject.linearVelocity = Vector3.zero;
-            heldObject.angularVelocity = Vector3.zero;
-
-            // Guardamos y desactivamos sus colliders
-            heldColliders = heldObject.GetComponentsInChildren<Collider>();
-
-            foreach (Collider col in heldColliders)
+            if (distance < closestDistance)
             {
-                col.enabled = false;
+                closestDistance = distance;
+                closestObject = rb;
             }
-
-            
-            heldObject.transform.SetParent(holdPoint);
-
-            heldObject.transform.localPosition = Vector3.zero;
-            heldObject.transform.localRotation = Quaternion.identity;
         }
+
+        if (closestObject == null)
+            return;
+
+        heldObject = closestObject;
+
+        ThrowableObject selectedThrowable =
+            heldObject.GetComponent<ThrowableObject>();
+
+        if (selectedThrowable != null)
+            selectedThrowable.SetHeld();
+
+        heldObject.linearVelocity = Vector3.zero;
+        heldObject.angularVelocity = Vector3.zero;
+        heldObject.isKinematic = true;
+
+        heldColliders = heldObject.GetComponentsInChildren<Collider>();
+
+        foreach (Collider col in heldColliders)
+        {
+            col.enabled = false;
+        }
+
+        heldObject.transform.SetParent(holdPoint);
+        heldObject.transform.localPosition = Vector3.zero;
+        heldObject.transform.localRotation = Quaternion.identity;
     }
 
     private void DropObject()
     {
-        heldObject.transform.SetParent(null);
+        ThrowableObject throwable = heldObject.GetComponent<ThrowableObject>();
 
+        if (throwable != null)
+            throwable.SetDropped();
+
+        heldObject.transform.SetParent(null);
         heldObject.isKinematic = false;
 
         EnableColliders();
@@ -87,14 +122,18 @@ public class ObjectGrabber : MonoBehaviour
     private void ThrowObject()
     {
         Rigidbody objectToThrow = heldObject;
+        ThrowableObject throwable =
+            objectToThrow.GetComponent<ThrowableObject>();
 
         objectToThrow.transform.SetParent(null);
-
         objectToThrow.isKinematic = false;
 
         EnableColliders();
 
         heldObject = null;
+
+        if (throwable != null)
+            throwable.SetThrown();
 
         objectToThrow.AddForce(
             cameraTransform.forward * throwForce,
@@ -113,5 +152,20 @@ public class ObjectGrabber : MonoBehaviour
         }
 
         heldColliders = null;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+
+        Vector3 detectionPosition =
+            transform.position +
+            Vector3.up * pickupHeight +
+            transform.forward * pickupForwardOffset;
+
+        Gizmos.DrawWireSphere(
+            detectionPosition,
+            pickupRadius
+        );
     }
 }
