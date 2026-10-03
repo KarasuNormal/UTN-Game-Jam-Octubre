@@ -1,0 +1,43 @@
+# Blender 5.0.0 MTL File: 'emtyisland.blend'
+# www.blender.org
+
+newmtl BroadleafBark
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/BroadleafBark.tga
+
+newmtl Ground
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.011518 0.127605 0.005928
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.047
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd -o 1 0 0 -s 6 6 1 C:/rocky-rugged-terrain_1_albedo.png
+map_Ns -o 1 0 0 -s 6 6 1 C:/rocky-rugged-terrain_1_roughness.png
+map_Bump -o 1 0 0 -s 6 6 1 -bm 0.500000 C:/rocky-rugged-terrain_1_normal-ogl.png
+
+newmtl Material.048
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/rocky_terrain_02_diff_1k.jpg
