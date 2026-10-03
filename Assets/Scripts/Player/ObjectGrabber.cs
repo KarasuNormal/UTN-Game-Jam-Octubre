@@ -65,7 +65,6 @@ public class ObjectGrabber : MonoBehaviour
 
         if (heldObject != null)
         {
-            // Chequear si mantenemos click derecho
             IsRotatingObject = Mouse.current.rightButton.isPressed;
 
             if (IsRotatingObject)
@@ -77,14 +76,12 @@ public class ObjectGrabber : MonoBehaviour
                 HandleFloatingEffect();
             }
 
-            // Solo permitimos cargar o lanzar si NO estamos rotando el objeto
             if (!IsRotatingObject)
             {
                 HandleThrowInput();
             }
             else if (isChargingThrow)
             {
-                // Si empezó a rotar mientras cargaba el tiro, cancelamos la carga
                 CancelThrowCharge();
             }
 
@@ -102,7 +99,6 @@ public class ObjectGrabber : MonoBehaviour
             }
         }
 
-        // Actualizar UI del slider si está cargando
         if (heldObject != null && isChargingThrow && throwPowerSlider != null)
         {
             throwPowerSlider.value = currentThrowForce;
@@ -198,7 +194,6 @@ public class ObjectGrabber : MonoBehaviour
         trajectoryLine.positionCount = lineSegments;
 
         Vector3 startPosition = holdPoint.position;
-        // Ahora la trayectoria calcula el arco usando la fuerza que se está cargando en tiempo real
         Vector3 startVelocity = (cameraTransform.forward * currentThrowForce) / heldObject.mass;
 
         Vector3 currentPosition = startPosition;
@@ -244,7 +239,6 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            // ¡ELIMINADA LA VERIFICACIÓN DEL TAG AQUÍ!
 
             ThrowableObject throwable = hit.transform.GetComponentInParent(typeof(ThrowableObject)) as ThrowableObject;
 
@@ -298,7 +292,7 @@ public class ObjectGrabber : MonoBehaviour
 
         currentThrowForce = minThrowForce;
         isChargingThrow = false;
-        magicFloatTimer = 0f; // Reiniciar el timer de levitación para que empiece prolijo
+        magicFloatTimer = 0f;
     }
 
     private void DropObject()
