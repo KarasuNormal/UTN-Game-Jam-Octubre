@@ -21,7 +21,7 @@ public class ThrowableObject : MonoBehaviour
     private void Awake()
     {
         rb = (Rigidbody)GetComponent(typeof(Rigidbody));
-        originalScale = transform.localScale; // Guardamos la escala real al iniciar
+        originalScale = transform.localScale; // Guarda la escala original de forma estricta al iniciar
     }
 
     void Start()
@@ -34,7 +34,7 @@ public class ThrowableObject : MonoBehaviour
         if (isLocked && !hasHabitant)
         {
             float newY = startPos.y + Mathf.Sin(Time.time * bobbingSpeed) * bobbingAmplitude;
-            transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
+            //transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
         }
         if (!wasThrown || isLocked || !canBePlaced)
             return;
@@ -45,15 +45,14 @@ public class ThrowableObject : MonoBehaviour
         }
     }
 
-    // MÃ©todos para cambiar la escala de forma absoluta y directa
-    public void Shrink(Vector3 targetScale)
+    public void ShrinkScale(Vector3 targetScale)
     {
         transform.localScale = targetScale;
         wasThrown = false;
         canBePlaced = false;
     }
 
-    public void Restore()
+    public void RestoreScale()
     {
         transform.localScale = originalScale;
         wasThrown = false;
