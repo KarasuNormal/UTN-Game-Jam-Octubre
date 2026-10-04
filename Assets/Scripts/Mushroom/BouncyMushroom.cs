@@ -7,6 +7,9 @@ public class BouncyMushroom : MonoBehaviour
     [SerializeField] private float playerBounceHeight = 8f;
     [SerializeField] private string playerTag = "Player";
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource boingSound;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(playerTag))
@@ -16,6 +19,11 @@ public class BouncyMushroom : MonoBehaviour
             if (controller != null)
             {
                 controller.ApplyBounce(playerBounceHeight);
+
+                if (boingSound != null)
+                {
+                    boingSound.Play();
+                }
             }
         }
     }
