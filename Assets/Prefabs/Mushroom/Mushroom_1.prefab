@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29f977c7efdb4e746a5aaa6f04e350c5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -59.208
+      value: -34.06
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29f977c7efdb4e746a5aaa6f04e350c5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 22.775
+      value: 28.86083
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29f977c7efdb4e746a5aaa6f04e350c5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -19.923
+      value: -7.48
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29f977c7efdb4e746a5aaa6f04e350c5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -150,6 +150,8 @@ MonoBehaviour:
   boingClips:
   - {fileID: 8300000, guid: 3ecfb33a9b4ccc74d9bbfb4527d1feb9, type: 3}
   - {fileID: 8300000, guid: 97310a29e22d7b2439266e7b91b2bca3, type: 3}
+  - {fileID: 8300000, guid: 60c6997c6b0478040b9c861aff2914da, type: 3}
+  - {fileID: 8300000, guid: 6ce116a150952b6409e0cb085e90cdb8, type: 3}
 --- !u!82 &396766035885666734
 AudioSource:
   m_ObjectHideFlags: 0
@@ -161,7 +163,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 3ecfb33a9b4ccc74d9bbfb4527d1feb9, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
