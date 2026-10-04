@@ -38,7 +38,7 @@ public class ObjectGrabber : MonoBehaviour
 
     [Header("Audio Settings")]
     [SerializeField] private AudioSource absorbAudioSource;     // Sonido al absorber con E
-    [SerializeField] private AudioSource chargeAudioSource;     // Sonido al cargar tiro con click izquierdo
+    [SerializeField] private AudioSource chargeAudioSource;     // Sonido al cargar tiro con click izquierdo (se detiene al soltar)
     [SerializeField] private AudioSource throwAudioSource;      // Sonido al expulsar/disparar
 
     public bool IsRotatingObject { get; private set; }
@@ -78,7 +78,6 @@ public class ObjectGrabber : MonoBehaviour
 
         if (heldObject != null)
         {
-            // CAMBIADO: Ahora rota mientras mantengas presionada la tecla R
             IsRotatingObject = Keyboard.current.rKey.isPressed;
 
             HandleFloatingEffect();
@@ -153,6 +152,7 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
         throwChargeTimer = 0f;
 
+        // Reproduce el sonido de carga
         if (chargeAudioSource != null)
         {
             chargeAudioSource.Play();
@@ -193,6 +193,13 @@ public class ObjectGrabber : MonoBehaviour
     {
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
+
+        // Detiene el sonido si se cancela la carga
+        if (chargeAudioSource != null && chargeAudioSource.isPlaying)
+        {
+            chargeAudioSource.Stop();
+        }
+
         if (forceBar != null)
         {
             forceBar.gameObject.SetActive(false);
@@ -331,6 +338,12 @@ public class ObjectGrabber : MonoBehaviour
             heldObject.isKinematic = false;
         }
 
+        // Detener sonido de carga por seguridad si se suelta el objeto de golpe
+        if (chargeAudioSource != null && chargeAudioSource.isPlaying)
+        {
+            chargeAudioSource.Stop();
+        }
+
         EnableColliders();
         heldObject = null;
         heldThrowableComponent = null;
@@ -348,6 +361,12 @@ public class ObjectGrabber : MonoBehaviour
     private void ThrowObject()
     {
         Rigidbody objectToThrow = heldObject;
+
+        // Detiene el sonido de carga al lanzar
+        if (chargeAudioSource != null && chargeAudioSource.isPlaying)
+        {
+            chargeAudioSource.Stop();
+        }
 
         if (objectToThrow != null)
         {
@@ -367,6 +386,7 @@ public class ObjectGrabber : MonoBehaviour
             heldObject = null;
             heldThrowableComponent = null;
 
+            // Reproduce el sonido de expulsión/lanzamiento
             if (throwAudioSource != null)
             {
                 throwAudioSource.Play();
@@ -379,13 +399,6 @@ public class ObjectGrabber : MonoBehaviour
         }
 
         isChargingThrow = false;
-        currentThrowForce = minThrowForce;
-
-        if (forceBar != null)
-        {
-            forceBar.gameObject.SetActive(false);
-            forceBarFrame.gameObject.SetActive(false);
-        }
     }
 
     private void EnableColliders()
