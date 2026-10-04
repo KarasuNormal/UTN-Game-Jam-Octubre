@@ -20,7 +20,7 @@ public class ThrowableObject : MonoBehaviour
         if (!wasThrown || isLocked || !canBePlaced)
             return;
 
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        if (Mouse.current.rightButton.wasPressedThisFrame || Keyboard.current.fKey.wasPressedThisFrame)
         {
             LockObject();
         }
