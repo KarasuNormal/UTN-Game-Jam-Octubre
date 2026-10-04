@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class ThrowableObject : MonoBehaviour
 {
     [SerializeField] private string bridgeTag = "BridgeGround";
+	private string playerTag = "Player";
 	
     private float bobbingAmplitude = 0.1f;
     private float bobbingSpeed = 2f;
@@ -12,6 +13,7 @@ public class ThrowableObject : MonoBehaviour
     private bool wasThrown;
     private bool isLocked;
     private bool canBePlaced;
+	private bool hasHabitant = false;
 	
 	Vector3 startPos;
 
@@ -27,7 +29,7 @@ public class ThrowableObject : MonoBehaviour
 
     private void Update()
     {
-		if (isLocked)
+		if (isLocked && !hasHabitant)
 		{
             float newY = startPos.y + Mathf.Sin(Time.time * bobbingSpeed) * bobbingAmplitude;
             transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
@@ -65,6 +67,10 @@ public class ThrowableObject : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+		if (other.CompareTag(playerTag))
+        {
+            hasHabitant = true;
+        }
         if (!wasThrown || isLocked)
             return;
 
@@ -76,6 +82,10 @@ public class ThrowableObject : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+		if (other.CompareTag(playerTag))
+        {
+            hasHabitant = false;
+        }
         if (isLocked)
             return;
 
