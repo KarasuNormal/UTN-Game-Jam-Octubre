@@ -17,12 +17,14 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float throwChargeInterval = 0.1f;
 
     [Header("UI Settings")]
-    //[SerializeField] private Slider throwPowerSlider;
     [SerializeField] private Image forceBar;
     [SerializeField] private Image forceBarFrame;
 
     [Header("Pickup")]
     [SerializeField] private LayerMask pickupLayer;
+
+    [Header("Scale Settings")]
+    [SerializeField] private Vector3 shrunkenScale = new Vector3(0.5f, 0.5f, 0.5f);
 
     [Header("Trajectory Settings")]
     [SerializeField] private LineRenderer trajectoryLine;
@@ -38,6 +40,7 @@ public class ObjectGrabber : MonoBehaviour
 
     private Rigidbody heldObject;
     private Collider[] heldColliders;
+    private ThrowableObject heldThrowableComponent;
 
     [SerializeField] private float currentThrowForce;
     public float CurrentThrowForce => currentThrowForce;
@@ -79,6 +82,8 @@ public class ObjectGrabber : MonoBehaviour
             else
             {
                 HandleFloatingEffect();
+                // Hacemos que siga exactamente la posición del holdPoint por código
+                heldObject.transform.position = holdPoint.position;
             }
 
             if (!IsRotatingObject)
@@ -90,10 +95,7 @@ public class ObjectGrabber : MonoBehaviour
                 CancelThrowCharge();
             }
 
-            if (heldObject != null)
-            {
-                DrawTrajectory();
-            }
+            DrawTrajectory();
         }
         else
         {
@@ -121,7 +123,8 @@ public class ObjectGrabber : MonoBehaviour
     {
         magicFloatTimer += Time.deltaTime;
         float offsetY = Mathf.Sin(magicFloatTimer * floatSpeed) * floatAmplitude;
-        heldObject.transform.localPosition = new Vector3(0, offsetY, 0);
+        // Ajustamos la posición manteniendo el holdPoint pero aplicando el flotado
+        heldObject.transform.position = holdPoint.position + new Vector3(0, offsetY, 0);
     }
 
     private void HandleThrowInput()
@@ -152,8 +155,6 @@ public class ObjectGrabber : MonoBehaviour
         {
             forceBar.gameObject.SetActive(true);
             forceBarFrame.gameObject.SetActive(true);
-            //throwPowerSlider.minValue = minThrowForce;
-            //throwPowerSlider.maxValue = maxThrowForce;
             forceBar.fillAmount = currentThrowForce;
         }
     }
@@ -246,7 +247,6 @@ public class ObjectGrabber : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-
             ThrowableObject throwable = hit.transform.GetComponentInParent(typeof(ThrowableObject)) as ThrowableObject;
 
             if (throwable != null && throwable.IsLocked())
@@ -270,15 +270,22 @@ public class ObjectGrabber : MonoBehaviour
             return;
 
         heldObject = closestObject;
+        heldThrowableComponent = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
-        ThrowableObject selectedThrowable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
-
-        if (selectedThrowable != null)
-            selectedThrowable.SetHeld();
-
+        // Desactivamos físicas para controlarlo por código
         heldObject.linearVelocity = Vector3.zero;
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
+
+        // Achicamos el objeto directamente llamando a su método
+        if (heldThrowableComponent != null)
+        {
+            heldThrowableComponent.Shrink(shrunkenScale);
+        }
+        else
+        {
+            heldObject.transform.localScale = shrunkenScale;
+        }
 
         Component[] rawColliders = heldObject.gameObject.GetComponentsInChildren(typeof(Collider));
         heldColliders = new Collider[rawColliders.Length];
@@ -293,10 +300,6 @@ public class ObjectGrabber : MonoBehaviour
                 col.enabled = false;
         }
 
-        heldObject.transform.SetParent(holdPoint);
-        heldObject.transform.localPosition = Vector3.zero;
-        heldObject.transform.localRotation = Quaternion.identity;
-
         currentThrowForce = minThrowForce;
         isChargingThrow = false;
         magicFloatTimer = 0f;
@@ -306,24 +309,31 @@ public class ObjectGrabber : MonoBehaviour
     {
         if (heldObject != null)
         {
-            ThrowableObject throwable = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
+            // Restauramos tamaño y físicas antes de soltar
+            if (heldThrowableComponent != null)
+            {
+                heldThrowableComponent.Restore();
+            }
+            else
+            {
+                heldObject.transform.localScale = Vector3.one;
+            }
 
-            if (throwable != null)
-                throwable.SetDropped();
-
-            heldObject.transform.SetParent(null);
             heldObject.isKinematic = false;
         }
 
         EnableColliders();
         heldObject = null;
+        heldThrowableComponent = null;
 
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
 
         if (forceBar != null)
+        {
             forceBar.gameObject.SetActive(false);
             forceBarFrame.gameObject.SetActive(false);
+        }
     }
 
     private void ThrowObject()
@@ -332,17 +342,22 @@ public class ObjectGrabber : MonoBehaviour
 
         if (objectToThrow != null)
         {
-            ThrowableObject throwable = objectToThrow.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
+            // Restauramos tamaño y físicas antes de lanzar
+            if (heldThrowableComponent != null)
+            {
+                heldThrowableComponent.SetThrown();
+            }
+            else
+            {
+                objectToThrow.transform.localScale = Vector3.one;
+            }
 
-            objectToThrow.transform.SetParent(null);
             objectToThrow.isKinematic = false;
 
             EnableColliders();
 
             heldObject = null;
-
-            if (throwable != null)
-                throwable.SetThrown();
+            heldThrowableComponent = null;
 
             objectToThrow.AddForce(
                 cameraTransform.forward * currentThrowForce,
@@ -354,10 +369,10 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
 
         if (forceBar != null)
-		{
+        {
             forceBar.gameObject.SetActive(false);
             forceBarFrame.gameObject.SetActive(false);
-		}
+        }
     }
 
     private void EnableColliders()

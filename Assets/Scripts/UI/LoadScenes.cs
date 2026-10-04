@@ -18,7 +18,7 @@ public class loadScenes : MonoBehaviour
     {
         SceneManager.LoadScene(scene);
     }
-    public void Pause()
+    /*public void Pause()
     {
         Time.timeScale = 0;
     }
@@ -26,4 +26,5 @@ public class loadScenes : MonoBehaviour
     {
         Time.timeScale = 1;
     }
+    */
 }
