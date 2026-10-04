@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 70206486}
   - component: {fileID: 70206485}
   - component: {fileID: 70206484}
+  - component: {fileID: 70206487}
   m_Layer: 5
   m_Name: salir
   m_TagString: Untagged
@@ -252,6 +253,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 70206482}
   m_CullTransparentMesh: 1
+--- !u!114 &70206487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70206482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d25ac9c25983a014289e65f36dd92bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
+  button: {fileID: 70206484}
 --- !u!1 &382071131
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,6 +432,7 @@ GameObject:
   - component: {fileID: 539712400}
   - component: {fileID: 539712399}
   - component: {fileID: 539712398}
+  - component: {fileID: 539712401}
   m_Layer: 5
   m_Name: creditos
   m_TagString: Untagged
@@ -539,6 +554,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539712396}
   m_CullTransparentMesh: 1
+--- !u!114 &539712401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539712396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d25ac9c25983a014289e65f36dd92bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
+  button: {fileID: 539712398}
 --- !u!1 &582243385
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,6 +1740,7 @@ GameObject:
   - component: {fileID: 2017649515}
   - component: {fileID: 2017649514}
   - component: {fileID: 2017649513}
+  - component: {fileID: 2017649516}
   m_Layer: 5
   m_Name: Jugar
   m_TagString: Untagged
@@ -1845,6 +1874,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2017649511}
   m_CullTransparentMesh: 1
+--- !u!114 &2017649516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017649511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d25ac9c25983a014289e65f36dd92bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
+  button: {fileID: 2017649513}
 --- !u!1 &2039688630
 GameObject:
   m_ObjectHideFlags: 0
