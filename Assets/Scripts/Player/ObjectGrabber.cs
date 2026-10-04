@@ -13,6 +13,7 @@ public class ObjectGrabber : MonoBehaviour
     [Header("Throw Settings")]
     [SerializeField] private float minThrowForce = 5f;
     [SerializeField] private float maxThrowForce = 20f;
+    public float MaxThrowForce => maxThrowForce;
     [SerializeField] private float throwChargeInterval = 0.1f;
 
     [Header("UI Settings")]
@@ -38,7 +39,8 @@ public class ObjectGrabber : MonoBehaviour
     private Rigidbody heldObject;
     private Collider[] heldColliders;
 
-    private float currentThrowForce;
+    [SerializeField] private float currentThrowForce;
+    public float CurrentThrowForce => currentThrowForce;
     private float throwChargeTimer;
     private bool isChargingThrow;
     private float magicFloatTimer;

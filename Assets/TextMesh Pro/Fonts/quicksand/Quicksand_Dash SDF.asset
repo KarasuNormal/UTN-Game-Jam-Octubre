@@ -1,13 +1,13 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-5323963963406458751
+--- !u!21 &-6919145213731026355
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AuldMagick Italic Atlas Material
+  m_Name: Quicksand_Dash Atlas Material
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -36,7 +36,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2200640098127669535}
+        m_Texture: {fileID: 2424399700575683353}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -73,9 +73,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.73125
-    - _ScaleRatioC: 0.73125
+    - _ScaleRatioA: 1
+    - _ScaleRatioB: 1
+    - _ScaleRatioC: 1
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -119,36 +119,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: AuldMagick Italic SDF
+  m_Name: Quicksand_Dash SDF
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_FontAsset
   m_Version: 1.1.0
   m_FaceInfo:
     m_FaceIndex: 0
-    m_FamilyName: AuldMagick
-    m_StyleName: Italic
+    m_FamilyName: Quicksand
+    m_StyleName: Dash
     m_PointSize: 90
     m_Scale: 1
-    m_UnitsPerEM: 2048
-    m_LineHeight: 103.53516
-    m_AscentLine: 56.82129
-    m_CapLine: 41
-    m_MeanLine: 25
+    m_UnitsPerEM: 1000
+    m_LineHeight: 83.700005
+    m_AscentLine: 63.000004
+    m_CapLine: 63
+    m_MeanLine: 45
     m_Baseline: 0
-    m_DescentLine: -13.271484
-    m_SuperscriptOffset: 56.82129
+    m_DescentLine: -18
+    m_SuperscriptOffset: 63.000004
     m_SuperscriptSize: 0.5
-    m_SubscriptOffset: -13.271484
+    m_SubscriptOffset: -18
     m_SubscriptSize: 0.5
-    m_UnderlineOffset: -12.832031
-    m_UnderlineThickness: 6.591797
-    m_StrikethroughOffset: 10
-    m_StrikethroughThickness: 6.591797
-    m_TabWidth: 22
-  m_Material: {fileID: -5323963963406458751}
-  m_SourceFontFileGUID: d199780a731457d45bed6b2781bcf087
+    m_UnderlineOffset: -9
+    m_UnderlineThickness: 4.5
+    m_StrikethroughOffset: 18
+    m_StrikethroughThickness: 4.5
+    m_TabWidth: 27
+  m_Material: {fileID: -6919145213731026355}
+  m_SourceFontFileGUID: 0f499b95f402e1d4fbc7d5785991e4b4
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: d199780a731457d45bed6b2781bcf087
+    sourceFontFileGUID: 0f499b95f402e1d4fbc7d5785991e4b4
     faceIndex: 0
     pointSizeSamplingMode: 0
     pointSize: 90
@@ -165,14 +165,14 @@ MonoBehaviour:
     fontStyleModifier: 0
     renderMode: 4165
     includeFontFeatures: 0
-  m_SourceFontFile: {fileID: 12800000, guid: d199780a731457d45bed6b2781bcf087, type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: 0f499b95f402e1d4fbc7d5785991e4b4, type: 3}
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
   InternalDynamicOS: 0
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: 2200640098127669535}
+  - {fileID: 2424399700575683353}
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 0
   m_GetFontFeatures: 1
@@ -250,13 +250,13 @@ MonoBehaviour:
     kerningPairs: []
   fallbackFontAssets: []
   atlas: {fileID: 0}
---- !u!28 &2200640098127669535
+--- !u!28 &2424399700575683353
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AuldMagick Italic Atlas
+  m_Name: Quicksand_Dash Atlas
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -290,7 +290,7 @@ Texture2D:
   m_ColorSpace: 1
   m_PlatformBlob: 
   image data: 1
-  _typelessdata: 00
+  _typelessdata: cd
   m_StreamData:
     serializedVersion: 2
     offset: 0

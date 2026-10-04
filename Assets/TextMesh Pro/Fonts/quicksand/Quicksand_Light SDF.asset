@@ -1,12 +1,12 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!28 &-8817465921783898165
+--- !u!28 &-7210412837053764388
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AuldMagick Atlas
+  m_Name: Quicksand_Light Atlas
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -40,7 +40,7 @@ Texture2D:
   m_ColorSpace: 1
   m_PlatformBlob: 
   image data: 1
-  _typelessdata: 00
+  _typelessdata: cd
   m_StreamData:
     serializedVersion: 2
     offset: 0
@@ -56,36 +56,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: AuldMagick SDF
+  m_Name: Quicksand_Light SDF
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_FontAsset
   m_Version: 1.1.0
   m_FaceInfo:
     m_FaceIndex: 0
-    m_FamilyName: AuldMagick
-    m_StyleName: Regular
+    m_FamilyName: Quicksand
+    m_StyleName: Light
     m_PointSize: 90
     m_Scale: 1
-    m_UnitsPerEM: 2048
-    m_LineHeight: 103.53516
-    m_AscentLine: 56.82129
-    m_CapLine: 41
-    m_MeanLine: 25
+    m_UnitsPerEM: 1000
+    m_LineHeight: 83.700005
+    m_AscentLine: 63.000004
+    m_CapLine: 63
+    m_MeanLine: 45
     m_Baseline: 0
-    m_DescentLine: -13.271484
-    m_SuperscriptOffset: 56.82129
+    m_DescentLine: -18
+    m_SuperscriptOffset: 63.000004
     m_SuperscriptSize: 0.5
-    m_SubscriptOffset: -13.271484
+    m_SubscriptOffset: -18
     m_SubscriptSize: 0.5
-    m_UnderlineOffset: -12.832031
-    m_UnderlineThickness: 6.591797
-    m_StrikethroughOffset: 10
-    m_StrikethroughThickness: 6.591797
-    m_TabWidth: 22
-  m_Material: {fileID: 2605151388995304308}
-  m_SourceFontFileGUID: f3fbdd45901bad04bac88ce782e1b550
+    m_UnderlineOffset: -9
+    m_UnderlineThickness: 4.5
+    m_StrikethroughOffset: 18
+    m_StrikethroughThickness: 4.5
+    m_TabWidth: 27
+  m_Material: {fileID: 4553660556801507634}
+  m_SourceFontFileGUID: c85f27cb324117f4e9fbef477800481e
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: f3fbdd45901bad04bac88ce782e1b550
+    sourceFontFileGUID: c85f27cb324117f4e9fbef477800481e
     faceIndex: 0
     pointSizeSamplingMode: 0
     pointSize: 90
@@ -102,14 +102,14 @@ MonoBehaviour:
     fontStyleModifier: 0
     renderMode: 4165
     includeFontFeatures: 0
-  m_SourceFontFile: {fileID: 12800000, guid: f3fbdd45901bad04bac88ce782e1b550, type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: c85f27cb324117f4e9fbef477800481e, type: 3}
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
   InternalDynamicOS: 0
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: -8817465921783898165}
+  - {fileID: -7210412837053764388}
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 0
   m_GetFontFeatures: 1
@@ -187,14 +187,14 @@ MonoBehaviour:
     kerningPairs: []
   fallbackFontAssets: []
   atlas: {fileID: 0}
---- !u!21 &2605151388995304308
+--- !u!21 &4553660556801507634
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AuldMagick Atlas Material
+  m_Name: Quicksand_Light Atlas Material
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -223,7 +223,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: -8817465921783898165}
+        m_Texture: {fileID: -7210412837053764388}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -260,9 +260,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.73125
-    - _ScaleRatioC: 0.73125
+    - _ScaleRatioA: 1
+    - _ScaleRatioB: 1
+    - _ScaleRatioC: 1
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
