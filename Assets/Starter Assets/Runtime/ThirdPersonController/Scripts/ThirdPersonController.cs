@@ -474,5 +474,18 @@ namespace StarterAssets
                 );
             }
         }
+
+        public void ApplyBounce(float bounceHeight)
+        {
+            // Le aplicamos la fuerza matemática hacia arriba
+            _verticalVelocity = Mathf.Sqrt(bounceHeight * -2f * Gravity);
+
+            // Si tenemos animador, forzamos la pose de salto para que no se vea rígido
+            if (_hasAnimator)
+            {
+                _animator.SetBool(_animIDJump, true);
+                _animator.SetBool(_animIDFreeFall, false);
+            }
+        }
     }
 }
