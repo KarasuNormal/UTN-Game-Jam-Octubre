@@ -474,5 +474,16 @@ namespace StarterAssets
                 );
             }
         }
+
+        public void ApplyBounce(float bounceHeight)
+        {
+            _verticalVelocity = Mathf.Sqrt(bounceHeight * -2f * Gravity);
+
+            if (_hasAnimator)
+            {
+                _animator.SetBool(_animIDJump, true);
+                _animator.SetBool(_animIDFreeFall, false);
+            }
+        }
     }
 }
