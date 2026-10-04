@@ -4,23 +4,38 @@ using UnityEngine.InputSystem;
 public class ThrowableObject : MonoBehaviour
 {
     [SerializeField] private string bridgeTag = "BridgeGround";
+	
+    private float bobbingAmplitude = 0.1f;
+    private float bobbingSpeed = 2f;
 
     private Rigidbody rb;
     private bool wasThrown;
     private bool isLocked;
     private bool canBePlaced;
+	
+	Vector3 startPos;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
+	
+    void Start()
+    {
+        startPos = transform.localPosition;
+    }
 
     private void Update()
     {
+		if (isLocked)
+		{
+            float newY = startPos.y + Mathf.Sin(Time.time * bobbingSpeed) * bobbingAmplitude;
+            transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
+		}
         if (!wasThrown || isLocked || !canBePlaced)
             return;
 
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        if (Mouse.current.rightButton.wasPressedThisFrame || Keyboard.current.fKey.wasPressedThisFrame)
         {
             LockObject();
         }
@@ -72,6 +87,7 @@ public class ThrowableObject : MonoBehaviour
 
     private void LockObject()
     {
+		startPos = transform.localPosition;
         isLocked = true;
         wasThrown = false;
         canBePlaced = false;

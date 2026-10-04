@@ -354,8 +354,10 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
 
         if (forceBar != null)
+		{
             forceBar.gameObject.SetActive(false);
             forceBarFrame.gameObject.SetActive(false);
+		}
     }
 
     private void EnableColliders()
