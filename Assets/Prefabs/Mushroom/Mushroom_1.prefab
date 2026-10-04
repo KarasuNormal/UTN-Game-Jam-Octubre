@@ -146,7 +146,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BouncyMushroom
   playerBounceHeight: 8
   playerTag: Player
-  boingSound: {fileID: 396766035885666734}
+  audioSource: {fileID: 0}
+  boingClips:
+  - {fileID: 8300000, guid: 3ecfb33a9b4ccc74d9bbfb4527d1feb9, type: 3}
+  - {fileID: 8300000, guid: 97310a29e22d7b2439266e7b91b2bca3, type: 3}
 --- !u!82 &396766035885666734
 AudioSource:
   m_ObjectHideFlags: 0

@@ -8,7 +8,8 @@ public class BouncyMushroom : MonoBehaviour
     [SerializeField] private string playerTag = "Player";
 
     [Header("Audio")]
-    [SerializeField] private AudioSource boingSound;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] boingClips;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -20,9 +21,11 @@ public class BouncyMushroom : MonoBehaviour
             {
                 controller.ApplyBounce(playerBounceHeight);
 
-                if (boingSound != null)
+                if (audioSource != null && boingClips != null && boingClips.Length > 0)
                 {
-                    boingSound.Play();
+                    int indiceAlAzar = Random.Range(0, boingClips.Length);
+
+                    audioSource.PlayOneShot(boingClips[indiceAlAzar]);
                 }
             }
         }
