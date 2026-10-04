@@ -16,7 +16,9 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float throwChargeInterval = 0.1f;
 
     [Header("UI Settings")]
-    [SerializeField] private Slider throwPowerSlider;
+    //[SerializeField] private Slider throwPowerSlider;
+    [SerializeField] private Image forceBar;
+    [SerializeField] private Image forceBarFrame;
 
     [Header("Pickup")]
     [SerializeField] private LayerMask pickupLayer;
@@ -43,9 +45,10 @@ public class ObjectGrabber : MonoBehaviour
 
     private void Start()
     {
-        if (throwPowerSlider != null)
+        if (forceBar != null)
         {
-            throwPowerSlider.gameObject.SetActive(false);
+            forceBar.gameObject.SetActive(false);
+            forceBarFrame.gameObject.SetActive(false);
         }
     }
 
@@ -99,9 +102,9 @@ public class ObjectGrabber : MonoBehaviour
             }
         }
 
-        if (heldObject != null && isChargingThrow && throwPowerSlider != null)
+        if (heldObject != null && isChargingThrow && forceBar != null)
         {
-            throwPowerSlider.value = currentThrowForce;
+            forceBar.fillAmount = currentThrowForce;
         }
     }
 
@@ -143,12 +146,13 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
         throwChargeTimer = 0f;
 
-        if (throwPowerSlider != null)
+        if (forceBar != null)
         {
-            throwPowerSlider.gameObject.SetActive(true);
-            throwPowerSlider.minValue = minThrowForce;
-            throwPowerSlider.maxValue = maxThrowForce;
-            throwPowerSlider.value = currentThrowForce;
+            forceBar.gameObject.SetActive(true);
+            forceBarFrame.gameObject.SetActive(true);
+            //throwPowerSlider.minValue = minThrowForce;
+            //throwPowerSlider.maxValue = maxThrowForce;
+            forceBar.fillAmount = currentThrowForce;
         }
     }
 
@@ -168,9 +172,9 @@ public class ObjectGrabber : MonoBehaviour
             if (currentThrowForce > maxThrowForce)
                 currentThrowForce = maxThrowForce;
 
-            if (throwPowerSlider != null)
+            if (forceBar != null)
             {
-                throwPowerSlider.value = currentThrowForce;
+                forceBar.fillAmount = currentThrowForce;
             }
         }
     }
@@ -179,9 +183,10 @@ public class ObjectGrabber : MonoBehaviour
     {
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
-        if (throwPowerSlider != null)
+        if (forceBar != null)
         {
-            throwPowerSlider.gameObject.SetActive(false);
+            forceBar.gameObject.SetActive(false);
+            forceBarFrame.gameObject.SetActive(false);
         }
     }
 
@@ -314,8 +319,9 @@ public class ObjectGrabber : MonoBehaviour
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
 
-        if (throwPowerSlider != null)
-            throwPowerSlider.gameObject.SetActive(false);
+        if (forceBar != null)
+            forceBar.gameObject.SetActive(false);
+            forceBarFrame.gameObject.SetActive(false);
     }
 
     private void ThrowObject()
@@ -345,8 +351,11 @@ public class ObjectGrabber : MonoBehaviour
         isChargingThrow = false;
         currentThrowForce = minThrowForce;
 
-        if (throwPowerSlider != null)
-            throwPowerSlider.gameObject.SetActive(false);
+        if (forceBar != null)
+		{
+            forceBar.gameObject.SetActive(false);
+            forceBarFrame.gameObject.SetActive(false);
+		}
     }
 
     private void EnableColliders()
