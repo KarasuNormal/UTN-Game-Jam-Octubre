@@ -75,15 +75,11 @@ public class ObjectGrabber : MonoBehaviour
         {
             IsRotatingObject = Mouse.current.rightButton.isPressed;
 
+            HandleFloatingEffect();
+
             if (IsRotatingObject)
             {
                 HandleRotation();
-            }
-            else
-            {
-                HandleFloatingEffect();
-                // Hacemos que siga exactamente la posición del holdPoint por código
-                heldObject.transform.position = holdPoint.position;
             }
 
             if (!IsRotatingObject)
@@ -100,6 +96,7 @@ public class ObjectGrabber : MonoBehaviour
         else
         {
             IsRotatingObject = false;
+
             if (trajectoryLine != null && trajectoryLine.enabled)
             {
                 trajectoryLine.enabled = false;
@@ -123,7 +120,6 @@ public class ObjectGrabber : MonoBehaviour
     {
         magicFloatTimer += Time.deltaTime;
         float offsetY = Mathf.Sin(magicFloatTimer * floatSpeed) * floatAmplitude;
-        // Ajustamos la posición manteniendo el holdPoint pero aplicando el flotado
         heldObject.transform.position = holdPoint.position + new Vector3(0, offsetY, 0);
     }
 
@@ -272,15 +268,14 @@ public class ObjectGrabber : MonoBehaviour
         heldObject = closestObject;
         heldThrowableComponent = heldObject.gameObject.GetComponent(typeof(ThrowableObject)) as ThrowableObject;
 
-        // Desactivamos físicas para controlarlo por código
         heldObject.linearVelocity = Vector3.zero;
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
 
-        // Achicamos el objeto directamente llamando a su método
+        // Únicamente aplicamos la escala reducida a través del componente del objeto
         if (heldThrowableComponent != null)
         {
-            heldThrowableComponent.Shrink(shrunkenScale);
+            heldThrowableComponent.ShrinkScale(shrunkenScale);
         }
         else
         {
@@ -309,10 +304,10 @@ public class ObjectGrabber : MonoBehaviour
     {
         if (heldObject != null)
         {
-            // Restauramos tamaño y físicas antes de soltar
+            // Restauramos ÚNICAMENTE la escala original desde el ThrowableObject
             if (heldThrowableComponent != null)
             {
-                heldThrowableComponent.Restore();
+                heldThrowableComponent.RestoreScale();
             }
             else
             {
@@ -342,7 +337,7 @@ public class ObjectGrabber : MonoBehaviour
 
         if (objectToThrow != null)
         {
-            // Restauramos tamaño y físicas antes de lanzar
+            // Restauramos ÚNICAMENTE la escala original desde el ThrowableObject
             if (heldThrowableComponent != null)
             {
                 heldThrowableComponent.SetThrown();
