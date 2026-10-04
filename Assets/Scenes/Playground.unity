@@ -270,10 +270,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bridge
       objectReference: {fileID: 0}
-    - target: {fileID: 8539652017709214821, guid: becfee201e523054395430b779bb04ce, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.056
-      objectReference: {fileID: 0}
     - target: {fileID: 8818722582559456667, guid: becfee201e523054395430b779bb04ce, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.53
