@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 public class ThrowableObject : MonoBehaviour
 {
     [SerializeField] private string bridgeTag = "BridgeGround";
-	private string playerTag = "Player";
-	
+    private string playerTag = "Player";
+
     private float bobbingAmplitude = 0.1f;
     private float bobbingSpeed = 2f;
 
@@ -13,15 +13,17 @@ public class ThrowableObject : MonoBehaviour
     private bool wasThrown;
     private bool isLocked;
     private bool canBePlaced;
-	private bool hasHabitant = false;
-	
-	Vector3 startPos;
+    private bool hasHabitant = false;
+
+    private Vector3 originalScale;
+    private Vector3 startPos;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        rb = (Rigidbody)GetComponent(typeof(Rigidbody));
+        originalScale = transform.localScale; // Guardamos la escala real al iniciar
     }
-	
+
     void Start()
     {
         startPos = transform.localPosition;
@@ -29,11 +31,11 @@ public class ThrowableObject : MonoBehaviour
 
     private void Update()
     {
-		if (isLocked && !hasHabitant)
-		{
+        if (isLocked && !hasHabitant)
+        {
             float newY = startPos.y + Mathf.Sin(Time.time * bobbingSpeed) * bobbingAmplitude;
             transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
-		}
+        }
         if (!wasThrown || isLocked || !canBePlaced)
             return;
 
@@ -43,14 +45,17 @@ public class ThrowableObject : MonoBehaviour
         }
     }
 
-    public void SetHeld()
+    // MÃ©todos para cambiar la escala de forma absoluta y directa
+    public void Shrink(Vector3 targetScale)
     {
+        transform.localScale = targetScale;
         wasThrown = false;
         canBePlaced = false;
     }
 
-    public void SetDropped()
+    public void Restore()
     {
+        transform.localScale = originalScale;
         wasThrown = false;
         canBePlaced = false;
     }
@@ -58,6 +63,7 @@ public class ThrowableObject : MonoBehaviour
     public void SetThrown()
     {
         wasThrown = true;
+        transform.localScale = originalScale;
     }
 
     public bool IsLocked()
@@ -67,7 +73,7 @@ public class ThrowableObject : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-		if (other.CompareTag(playerTag))
+        if (other.CompareTag(playerTag))
         {
             hasHabitant = true;
         }
@@ -82,7 +88,7 @@ public class ThrowableObject : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-		if (other.CompareTag(playerTag))
+        if (other.CompareTag(playerTag))
         {
             hasHabitant = false;
         }
@@ -97,7 +103,7 @@ public class ThrowableObject : MonoBehaviour
 
     private void LockObject()
     {
-		startPos = transform.localPosition;
+        startPos = transform.localPosition;
         isLocked = true;
         wasThrown = false;
         canBePlaced = false;
