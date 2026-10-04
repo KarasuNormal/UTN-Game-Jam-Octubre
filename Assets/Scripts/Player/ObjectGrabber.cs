@@ -36,6 +36,12 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float floatAmplitude = 0.1f;
     [SerializeField] private float floatSpeed = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource grabSound;
+    [SerializeField] private AudioSource throwSound;
+    [SerializeField] private AudioSource chargeSound;
+    [SerializeField] private AudioSource stopGrabSound;
+
     public bool IsRotatingObject { get; private set; }
 
     private Rigidbody heldObject;
@@ -180,6 +186,10 @@ public class ObjectGrabber : MonoBehaviour
 
             forceBar.fillAmount = currentThrowForce;
         }
+        if (chargeSound != null)
+        {
+            chargeSound.Play();
+        }
     }
 
     private void ChargeThrow()
@@ -220,6 +230,10 @@ public class ObjectGrabber : MonoBehaviour
             {
                 forceBarFrame.gameObject.SetActive(false);
             }
+        }
+        if (chargeSound != null)
+        {
+            chargeSound.Stop();
         }
     }
 
@@ -377,6 +391,11 @@ public class ObjectGrabber : MonoBehaviour
         currentThrowForce = minThrowForce;
         isChargingThrow = false;
         magicFloatTimer = 0f;
+
+        if (grabSound != null)
+        {
+            grabSound.Play();
+        }
     }
 
     private void DropObject()
@@ -413,6 +432,10 @@ public class ObjectGrabber : MonoBehaviour
                 forceBarFrame.gameObject.SetActive(false);
             }
         }
+        if (stopGrabSound != null)
+        {
+            stopGrabSound.Play();
+        }
     }
 
     private void ThrowObject()
@@ -442,6 +465,11 @@ public class ObjectGrabber : MonoBehaviour
                 cameraTransform.forward * currentThrowForce,
                 ForceMode.Impulse
             );
+
+            if (throwSound != null)
+            {
+                throwSound.Play();
+            }
         }
 
         isChargingThrow = false;
