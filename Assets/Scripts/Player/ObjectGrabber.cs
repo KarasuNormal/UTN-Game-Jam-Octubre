@@ -36,6 +36,11 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private float floatAmplitude = 0.1f;
     [SerializeField] private float floatSpeed = 2f;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource absorbAudioSource;     // Sonido al absorber con E
+    [SerializeField] private AudioSource chargeAudioSource;     // Sonido al cargar tiro con click izquierdo
+    [SerializeField] private AudioSource throwAudioSource;      // Sonido al expulsar/disparar
+
     public bool IsRotatingObject { get; private set; }
 
     private Rigidbody heldObject;
@@ -73,7 +78,8 @@ public class ObjectGrabber : MonoBehaviour
 
         if (heldObject != null)
         {
-            IsRotatingObject = Mouse.current.rightButton.isPressed;
+            // CAMBIADO: Ahora rota mientras mantengas presionada la tecla R
+            IsRotatingObject = Keyboard.current.rKey.isPressed;
 
             HandleFloatingEffect();
 
@@ -146,6 +152,11 @@ public class ObjectGrabber : MonoBehaviour
         isChargingThrow = true;
         currentThrowForce = minThrowForce;
         throwChargeTimer = 0f;
+
+        if (chargeAudioSource != null)
+        {
+            chargeAudioSource.Play();
+        }
 
         if (forceBar != null)
         {
@@ -272,7 +283,11 @@ public class ObjectGrabber : MonoBehaviour
         heldObject.angularVelocity = Vector3.zero;
         heldObject.isKinematic = true;
 
-        // Únicamente aplicamos la escala reducida a través del componente del objeto
+        if (absorbAudioSource != null)
+        {
+            absorbAudioSource.Play();
+        }
+
         if (heldThrowableComponent != null)
         {
             heldThrowableComponent.ShrinkScale(shrunkenScale);
@@ -304,7 +319,6 @@ public class ObjectGrabber : MonoBehaviour
     {
         if (heldObject != null)
         {
-            // Restauramos ÚNICAMENTE la escala original desde el ThrowableObject
             if (heldThrowableComponent != null)
             {
                 heldThrowableComponent.RestoreScale();
@@ -337,7 +351,6 @@ public class ObjectGrabber : MonoBehaviour
 
         if (objectToThrow != null)
         {
-            // Restauramos ÚNICAMENTE la escala original desde el ThrowableObject
             if (heldThrowableComponent != null)
             {
                 heldThrowableComponent.SetThrown();
@@ -353,6 +366,11 @@ public class ObjectGrabber : MonoBehaviour
 
             heldObject = null;
             heldThrowableComponent = null;
+
+            if (throwAudioSource != null)
+            {
+                throwAudioSource.Play();
+            }
 
             objectToThrow.AddForce(
                 cameraTransform.forward * currentThrowForce,

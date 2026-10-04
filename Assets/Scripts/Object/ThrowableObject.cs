@@ -18,10 +18,13 @@ public class ThrowableObject : MonoBehaviour
     private Vector3 originalScale;
     private Vector3 startPos;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource freezeAudioSource; // Sonido al congelar en la zona mágica
+
     private void Awake()
     {
         rb = (Rigidbody)GetComponent(typeof(Rigidbody));
-        originalScale = transform.localScale; // Guarda la escala original de forma estricta al iniciar
+        originalScale = transform.localScale;
     }
 
     void Start()
@@ -34,7 +37,6 @@ public class ThrowableObject : MonoBehaviour
         if (isLocked && !hasHabitant)
         {
             float newY = startPos.y + Mathf.Sin(Time.time * bobbingSpeed) * bobbingAmplitude;
-            //transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
         }
         if (!wasThrown || isLocked || !canBePlaced)
             return;
@@ -112,5 +114,11 @@ public class ThrowableObject : MonoBehaviour
         rb.isKinematic = true;
 
         gameObject.layer = LayerMask.NameToLayer("Default");
+
+        // Sonido de Congelar
+        if (freezeAudioSource != null)
+        {
+            freezeAudioSource.Play();
+        }
     }
 }
