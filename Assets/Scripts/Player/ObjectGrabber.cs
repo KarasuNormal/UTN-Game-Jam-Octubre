@@ -24,7 +24,16 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private LayerMask pickupLayer;
 
     [Header("Scale Settings")]
-    [SerializeField] private Vector3 shrunkenScale = new Vector3(0.5f, 0.5f, 0.5f);
+    [Tooltip("Cuanto se achica el objeto al agarrarlo (0.5 = a la mitad de su tamano).")]
+    [SerializeField, Range(0.05f, 1f)] private float shrinkFactor = 0.5f;
+    [Tooltip("Grosor maximo (en metros) de un objeto agarrado, medido en su lado intermedio. " +
+             "Los objetos voluminosos, como las piedras, se achican mas para no tapar la camara.")]
+    [SerializeField] private float maxHeldSize = 0.7f;
+    [Tooltip("Largo maximo (en metros, su lado mas largo) de un objeto agarrado. Es mas permisivo " +
+             "para que los objetos largos y finos, como la escalera, no queden en miniatura.")]
+    [SerializeField] private float maxHeldLength = 1.4f;
+
+    private Vector3 heldOriginalScale = Vector3.one;
 
     [Header("Trajectory Settings")]
     [SerializeField] private LineRenderer trajectoryLine;
@@ -329,13 +338,17 @@ public class ObjectGrabber : MonoBehaviour
             absorbAudioSource.Play();
         }
 
+        // Se calcula antes de achicarlo, con el objeto a su tamano real
+        heldOriginalScale = heldObject.transform.localScale;
+        Vector3 heldScale = heldOriginalScale * GetHeldScaleFactor(heldObject);
+
         if (heldThrowableComponent != null)
         {
-            heldThrowableComponent.ShrinkScale(shrunkenScale);
+            heldThrowableComponent.ShrinkScale(heldScale);
         }
         else
         {
-            heldObject.transform.localScale = shrunkenScale;
+            heldObject.transform.localScale = heldScale;
         }
 
         Component[] rawColliders = heldObject.gameObject.GetComponentsInChildren(typeof(Collider));
@@ -356,6 +369,80 @@ public class ObjectGrabber : MonoBehaviour
         magicFloatTimer = 0f;
     }
 
+    // Factor de escala al agarrar: se achica con shrinkFactor, y si aun asi el objeto
+    // quedaria muy voluminoso (lado intermedio > maxHeldSize) o muy largo (lado mayor >
+    // maxHeldLength), se achica lo necesario para entrar en esos limites.
+    // Se usa el lado intermedio como "grosor" porque es lo que realmente tapa la camara:
+    // una piedra es gruesa en todos sus lados, una escalera es larga pero fina.
+    private float GetHeldScaleFactor(Rigidbody rb)
+    {
+        float factor = shrinkFactor;
+        Vector3 size = GetObjectSize(rb.gameObject);
+
+        // Ordena los lados de menor a mayor
+        float a = size.x, b = size.y, c = size.z;
+        if (a > b) { float t = a; a = b; b = t; }
+        if (b > c) { float t = b; b = c; c = t; }
+        if (a > b) { float t = a; a = b; b = t; }
+
+        float middleSide = b;
+        float longestSide = c;
+
+        if (middleSide > 0.0001f && middleSide * factor > maxHeldSize)
+        {
+            factor = maxHeldSize / middleSide;
+        }
+
+        if (longestSide > 0.0001f && longestSide * factor > maxHeldLength)
+        {
+            factor = maxHeldLength / longestSide;
+        }
+
+        return factor;
+    }
+
+    // Tamano del objeto en metros sobre sus propios ejes (no cambia si el objeto esta girado),
+    // segun lo que se ve (renderers) o, si no tiene, segun sus colliders
+    private static Vector3 GetObjectSize(GameObject target)
+    {
+        Vector3 size = Vector3.zero;
+        bool found = false;
+
+        foreach (Renderer rend in target.GetComponentsInChildren<Renderer>())
+        {
+            if (!rend.enabled || rend is ParticleSystemRenderer || rend is TrailRenderer || rend is LineRenderer)
+                continue;
+
+            Vector3 scale = rend.transform.lossyScale;
+            Vector3 rendSize = Vector3.Scale(rend.localBounds.size,
+                new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+
+            size = Vector3.Max(size, rendSize);
+            found = true;
+        }
+
+        if (found)
+            return size;
+
+        bool hasBounds = false;
+        Bounds bounds = new Bounds(target.transform.position, Vector3.zero);
+
+        foreach (Collider col in target.GetComponentsInChildren<Collider>())
+        {
+            if (!col.enabled || col.isTrigger)
+                continue;
+
+            if (hasBounds)
+                bounds.Encapsulate(col.bounds);
+            else
+                bounds = col.bounds;
+
+            hasBounds = true;
+        }
+
+        return hasBounds ? bounds.size : Vector3.zero;
+    }
+
     private void DropObject()
     {
         if (heldObject != null)
@@ -366,7 +453,7 @@ public class ObjectGrabber : MonoBehaviour
             }
             else
             {
-                heldObject.transform.localScale = Vector3.one;
+                heldObject.transform.localScale = heldOriginalScale;
             }
 
             ReleaseSafely(heldObject);
@@ -410,7 +497,7 @@ public class ObjectGrabber : MonoBehaviour
             }
             else
             {
-                objectToThrow.transform.localScale = Vector3.one;
+                objectToThrow.transform.localScale = heldOriginalScale;
             }
 
             ReleaseSafely(objectToThrow);
