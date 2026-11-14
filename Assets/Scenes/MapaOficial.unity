@@ -386,7 +386,6 @@ GameObject:
   - component: {fileID: 43239309}
   - component: {fileID: 43239308}
   - component: {fileID: 43239307}
-  - component: {fileID: 43239306}
   - component: {fileID: 43239305}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1.001 (1)"
@@ -417,22 +416,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1359697596440766179, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &43239306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 43239304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &43239307
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -668,7 +651,6 @@ GameObject:
   - component: {fileID: 115269052}
   - component: {fileID: 115269056}
   - component: {fileID: 115269055}
-  - component: {fileID: 115269054}
   - component: {fileID: 115269053}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1.001 (1)"
@@ -714,22 +696,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1359697596440766179, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &115269054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115269051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &115269055
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1863,7 +1829,6 @@ GameObject:
   - component: {fileID: 293490374}
   - component: {fileID: 293490378}
   - component: {fileID: 293490377}
-  - component: {fileID: 293490376}
   - component: {fileID: 293490375}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1.001 (2)"
@@ -1909,22 +1874,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1359697596440766179, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &293490376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 293490373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &293490377
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3654,7 +3603,6 @@ GameObject:
   - component: {fileID: 662142306}
   - component: {fileID: 662142310}
   - component: {fileID: 662142309}
-  - component: {fileID: 662142308}
   - component: {fileID: 662142307}
   m_Layer: 0
   m_Name: "Peque\xF1aPiedra1 (1)"
@@ -3700,22 +3648,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7397202097589293625, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &662142308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662142305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &662142309
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4739,6 +4671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3860898044592096964, guid: 96c581c6d2801c147aa9a38345d9afb0, type: 3}
+    - {fileID: 8638046515903894287, guid: 96c581c6d2801c147aa9a38345d9afb0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5582539578136004724, guid: 96c581c6d2801c147aa9a38345d9afb0, type: 3}
@@ -4918,7 +4851,6 @@ GameObject:
   - component: {fileID: 793333819}
   - component: {fileID: 793333822}
   - component: {fileID: 793333821}
-  - component: {fileID: 793333820}
   - component: {fileID: 793333823}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1 (1)"
@@ -4942,22 +4874,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 654630633}
   m_LocalEulerAnglesHint: {x: -89.98, y: 54.68, z: 0}
---- !u!114 &793333820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 793333818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &793333821
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5937,7 +5853,6 @@ GameObject:
   - component: {fileID: 921919617}
   - component: {fileID: 921919621}
   - component: {fileID: 921919620}
-  - component: {fileID: 921919619}
   - component: {fileID: 921919618}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1.001 (3)"
@@ -5983,22 +5898,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1359697596440766179, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &921919619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921919616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &921919620
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6067,7 +5966,6 @@ GameObject:
   - component: {fileID: 939721468}
   - component: {fileID: 939721467}
   - component: {fileID: 939721466}
-  - component: {fileID: 939721465}
   - component: {fileID: 939721464}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1.001"
@@ -6098,22 +5996,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1359697596440766179, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &939721465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 939721463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &939721466
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7257,7 +7139,6 @@ GameObject:
   - component: {fileID: 1116462195}
   - component: {fileID: 1116462194}
   - component: {fileID: 1116462193}
-  - component: {fileID: 1116462192}
   - component: {fileID: 1116462191}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1.001 (2)"
@@ -7288,22 +7169,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1359697596440766179, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &1116462192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1116462190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &1116462193
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8622,7 +8487,6 @@ GameObject:
   - component: {fileID: 1260075688}
   - component: {fileID: 1260075692}
   - component: {fileID: 1260075691}
-  - component: {fileID: 1260075690}
   - component: {fileID: 1260075689}
   m_Layer: 0
   m_Name: "Peque\xF1aPuedra2 (2)"
@@ -8668,22 +8532,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5278384193298684720, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &1260075690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1260075687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &1260075691
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8798,7 +8646,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 69caa7fb6659cc549b4e87505b2e3a71, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f06f0a6f96f5a0b43aab5b01f6ea13c4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8941,7 +8789,6 @@ GameObject:
   - component: {fileID: 1286531133}
   - component: {fileID: 1286531137}
   - component: {fileID: 1286531136}
-  - component: {fileID: 1286531135}
   - component: {fileID: 1286531134}
   m_Layer: 0
   m_Name: "Peque\xF1aPuedra2 (1)"
@@ -8987,22 +8834,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5278384193298684720, guid: 01efaa3fddcc66a42b4df81fc29b821a, type: 3}
---- !u!114 &1286531135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1286531132}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &1286531136
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9430,7 +9261,6 @@ GameObject:
   - component: {fileID: 1347881115}
   - component: {fileID: 1347881118}
   - component: {fileID: 1347881117}
-  - component: {fileID: 1347881116}
   - component: {fileID: 1347881119}
   m_Layer: 0
   m_Name: "Peque\xF1aIsla1 (2)"
@@ -9454,22 +9284,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 654630633}
   m_LocalEulerAnglesHint: {x: -89.98, y: 54.68, z: 0}
---- !u!114 &1347881116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1347881114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebda520197f49f499433ea5df05eeba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FloatingIsland
-  minHeight: 0.2
-  maxHeight: 0.6
-  minSpeed: 0.3
-  maxSpeed: 0.8
 --- !u!23 &1347881117
 MeshRenderer:
   m_ObjectHideFlags: 0

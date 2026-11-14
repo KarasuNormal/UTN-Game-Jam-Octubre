@@ -111,6 +111,7 @@ public class ThrowableObject : MonoBehaviour
 
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         rb.isKinematic = true;
 
         gameObject.layer = LayerMask.NameToLayer("Default");

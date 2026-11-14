@@ -41,7 +41,17 @@ public class ObjectGrabber : MonoBehaviour
     [SerializeField] private AudioSource chargeAudioSource;     // Sonido al cargar tiro con click izquierdo (se detiene al soltar)
     [SerializeField] private AudioSource throwAudioSource;      // Sonido al expulsar/disparar
 
+    [Header("Release Safety")]
+    [Tooltip("Capas contra las que se evita que el objeto quede incrustado al soltarlo/lanzarlo.")]
+    [SerializeField] private LayerMask releaseObstacleMask = ~0;
+    [Tooltip("Separacion extra que se deja entre el objeto y lo que tocaba al soltarlo.")]
+    [SerializeField] private float releaseSkin = 0.02f;
+    [SerializeField] private int depenetrationIterations = 8;
+
     public bool IsRotatingObject { get; private set; }
+
+    private Collider[] playerColliders;
+    private readonly Collider[] overlapBuffer = new Collider[32];
 
     private Rigidbody heldObject;
     private Collider[] heldColliders;
@@ -52,6 +62,11 @@ public class ObjectGrabber : MonoBehaviour
     private float throwChargeTimer;
     private bool isChargingThrow;
     private float magicFloatTimer;
+
+    private void Awake()
+    {
+        playerColliders = GetComponentsInChildren<Collider>(true);
+    }
 
     private void Start()
     {
@@ -240,12 +255,29 @@ public class ObjectGrabber : MonoBehaviour
         }
     }
 
+    // La deteccion usa hacia donde mira la camara (no hacia donde mira el cuerpo del
+    // personaje), porque el cuerpo solo gira al caminar y en primera persona eso hacia
+    // que a veces no se pudiera agarrar el objeto que se estaba mirando.
+    private Vector3 GetPickupDetectionPosition()
+    {
+        Vector3 forward = transform.forward;
+
+        if (cameraTransform != null)
+        {
+            Vector3 flatCameraForward = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up);
+
+            if (flatCameraForward.sqrMagnitude > 0.0001f)
+            {
+                forward = flatCameraForward.normalized;
+            }
+        }
+
+        return transform.position + Vector3.up * pickupHeight + forward * pickupForwardOffset;
+    }
+
     private void TryPickup()
     {
-        Vector3 detectionPosition =
-            transform.position +
-            Vector3.up * pickupHeight +
-            transform.forward * pickupForwardOffset;
+        Vector3 detectionPosition = GetPickupDetectionPosition();
 
         Collider[] hits = Physics.OverlapSphere(
             detectionPosition,
@@ -288,6 +320,8 @@ public class ObjectGrabber : MonoBehaviour
 
         heldObject.linearVelocity = Vector3.zero;
         heldObject.angularVelocity = Vector3.zero;
+        // Los cuerpos cinematicos no soportan ContinuousDynamic: se pasa a Speculative antes
+        heldObject.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         heldObject.isKinematic = true;
 
         if (absorbAudioSource != null)
@@ -335,7 +369,7 @@ public class ObjectGrabber : MonoBehaviour
                 heldObject.transform.localScale = Vector3.one;
             }
 
-            heldObject.isKinematic = false;
+            ReleaseSafely(heldObject);
         }
 
         // Detener sonido de carga por seguridad si se suelta el objeto de golpe
@@ -344,7 +378,7 @@ public class ObjectGrabber : MonoBehaviour
             chargeAudioSource.Stop();
         }
 
-        EnableColliders();
+        heldColliders = null;
         heldObject = null;
         heldThrowableComponent = null;
 
@@ -379,10 +413,9 @@ public class ObjectGrabber : MonoBehaviour
                 objectToThrow.transform.localScale = Vector3.one;
             }
 
-            objectToThrow.isKinematic = false;
+            ReleaseSafely(objectToThrow);
 
-            EnableColliders();
-
+            heldColliders = null;
             heldObject = null;
             heldThrowableComponent = null;
 
@@ -399,30 +432,204 @@ public class ObjectGrabber : MonoBehaviour
         }
 
         isChargingThrow = false;
+        currentThrowForce = minThrowForce;
+
+        // Oculta la barra de fuerza una vez lanzado el objeto
+        HideForceBar();
     }
 
-    private void EnableColliders()
+    private void HideForceBar()
     {
-        if (heldColliders == null)
-            return;
+        if (forceBar != null)
+            forceBar.gameObject.SetActive(false);
 
-        foreach (Collider col in heldColliders)
+        if (forceBarFrame != null)
+            forceBarFrame.gameObject.SetActive(false);
+    }
+
+    // Suelta el objeto (ya con su escala real) sin que quede incrustado en el suelo,
+    // en una pared o en el propio jugador.
+    // Antes el objeto volvia a su tamano completo dentro de la geometria y la fisica lo
+    // expulsaba de golpe: por eso salia disparado, atravesaba el suelo cerca de los bordes
+    // o empujaba al jugador a traves del piso (y aparecia la pantalla de derrota).
+    private void ReleaseSafely(Rigidbody rb)
+    {
+        Collider[] objectColliders = heldColliders;
+
+        if (objectColliders == null)
         {
-            if (col != null)
-                col.enabled = true;
+            objectColliders = rb.GetComponentsInChildren<Collider>(true);
         }
 
-        heldColliders = null;
+        // 1) Si entre la camara y el punto donde flota el objeto hay una pared o el suelo,
+        //    se acerca el objeto hasta ese punto (los colliders del objeto siguen apagados).
+        if (cameraTransform != null)
+        {
+            Vector3 origin = cameraTransform.position;
+            Vector3 toObject = rb.transform.position - origin;
+            float distance = toObject.magnitude;
+
+            if (distance > 0.001f &&
+                Physics.Raycast(origin, toObject / distance, out RaycastHit hit, distance,
+                    releaseObstacleMask, QueryTriggerInteraction.Ignore) &&
+                !IsPlayerCollider(hit.collider))
+            {
+                rb.transform.position = hit.point - (toObject / distance) * 0.05f;
+            }
+        }
+
+        // 2) Se prenden los colliders y se ignora el choque con el jugador hasta que se separen.
+        foreach (Collider col in objectColliders)
+        {
+            if (col == null)
+                continue;
+
+            col.enabled = true;
+
+            foreach (Collider playerCol in playerColliders)
+            {
+                if (playerCol != null)
+                    Physics.IgnoreCollision(col, playerCol, true);
+            }
+        }
+
+        Physics.SyncTransforms();
+
+        // 3) Se saca el objeto de cualquier cosa en la que haya quedado metido, con suavidad.
+        Depenetrate(rb, objectColliders);
+
+        // 4) Recien ahora vuelve a ser fisico, sin velocidad residual y con deteccion continua
+        //    para que no atraviese el suelo al caer o al ser lanzado.
+        rb.isKinematic = false;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
+        StartCoroutine(RestorePlayerCollisionWhenSeparated(objectColliders));
+    }
+
+    private void Depenetrate(Rigidbody rb, Collider[] objectColliders)
+    {
+        for (int iteration = 0; iteration < depenetrationIterations; iteration++)
+        {
+            bool moved = false;
+
+            foreach (Collider col in objectColliders)
+            {
+                if (col == null || !col.enabled || col.isTrigger)
+                    continue;
+
+                Bounds bounds = col.bounds;
+
+                int count = Physics.OverlapBoxNonAlloc(
+                    bounds.center,
+                    bounds.extents + Vector3.one * releaseSkin,
+                    overlapBuffer,
+                    Quaternion.identity,
+                    releaseObstacleMask,
+                    QueryTriggerInteraction.Ignore
+                );
+
+                for (int i = 0; i < count; i++)
+                {
+                    Collider other = overlapBuffer[i];
+
+                    if (other == null || other.isTrigger || IsPlayerCollider(other) ||
+                        System.Array.IndexOf(objectColliders, other) >= 0)
+                        continue;
+
+                    if (Physics.ComputePenetration(
+                            col, col.transform.position, col.transform.rotation,
+                            other, other.transform.position, other.transform.rotation,
+                            out Vector3 direction, out float penetration))
+                    {
+                        rb.transform.position += direction * (penetration + releaseSkin);
+                        Physics.SyncTransforms();
+                        moved = true;
+                    }
+                }
+            }
+
+            if (!moved)
+                break;
+        }
+    }
+
+    private System.Collections.IEnumerator RestorePlayerCollisionWhenSeparated(Collider[] objectColliders)
+    {
+        while (true)
+        {
+            yield return new WaitForFixedUpdate();
+
+            if (!IsOverlappingPlayer(objectColliders))
+                break;
+        }
+
+        foreach (Collider col in objectColliders)
+        {
+            if (col == null)
+                continue;
+
+            foreach (Collider playerCol in playerColliders)
+            {
+                if (playerCol != null)
+                    Physics.IgnoreCollision(col, playerCol, false);
+            }
+        }
+    }
+
+    private bool IsOverlappingPlayer(Collider[] objectColliders)
+    {
+        foreach (Collider playerCol in playerColliders)
+        {
+            if (playerCol == null || !playerCol.enabled || playerCol.isTrigger)
+                continue;
+
+            // Se usa un margen chico para no devolver el choque justo cuando se tocan
+            int count;
+
+            if (playerCol is CharacterController cc)
+            {
+                Transform t = cc.transform;
+                float scale = Mathf.Max(t.lossyScale.x, t.lossyScale.y, t.lossyScale.z);
+                float radius = (cc.radius + cc.skinWidth) * scale + releaseSkin;
+                float halfHeight = Mathf.Max(cc.height * scale * 0.5f, radius);
+                Vector3 center = t.TransformPoint(cc.center);
+                Vector3 offset = Vector3.up * (halfHeight - radius);
+
+                count = Physics.OverlapCapsuleNonAlloc(
+                    center + offset, center - offset, radius,
+                    overlapBuffer, ~0, QueryTriggerInteraction.Ignore);
+            }
+            else
+            {
+                Bounds bounds = playerCol.bounds;
+
+                count = Physics.OverlapBoxNonAlloc(
+                    bounds.center, bounds.extents + Vector3.one * releaseSkin,
+                    overlapBuffer, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (System.Array.IndexOf(objectColliders, overlapBuffer[i]) >= 0)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsPlayerCollider(Collider col)
+    {
+        return col != null && System.Array.IndexOf(playerColliders, col) >= 0;
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
 
-        Vector3 detectionPosition =
-            transform.position +
-            Vector3.up * pickupHeight +
-            transform.forward * pickupForwardOffset;
+        Vector3 detectionPosition = GetPickupDetectionPosition();
 
         Gizmos.DrawWireSphere(
             detectionPosition,

@@ -88,6 +88,11 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        // Plataforma movil (isla flotante) sobre la que esta parado el jugador
+        private Transform _currentPlatform;
+        private Vector3 _platformLastPosition;
+        private readonly Collider[] _platformHits = new Collider[8];
+
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
         private float _coyoteTimeDelta;
@@ -161,6 +166,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
 
             GroundedCheck();
+            FollowMovingPlatform();
             JumpAndGravity();
             Move();
         }
@@ -197,6 +203,59 @@ namespace StarterAssets
             if (_hasAnimator)
             {
                 _animator.SetBool(_animIDGrounded, Grounded);
+            }
+        }
+
+        // Si el jugador esta parado sobre una isla flotante, lo mueve junto con ella.
+        // Sin esto la isla sube y baja "por debajo" del CharacterController y la camara
+        // da saltos erraticos (y el jugador puede quedar dentro de la isla).
+        private void FollowMovingPlatform()
+        {
+            Transform platform = null;
+
+            if (Grounded && _verticalVelocity <= 0.0f)
+            {
+                Vector3 spherePosition = new Vector3(
+                    transform.position.x,
+                    transform.position.y - GroundedOffset,
+                    transform.position.z
+                );
+
+                int count = Physics.OverlapSphereNonAlloc(
+                    spherePosition,
+                    GroundedRadius,
+                    _platformHits,
+                    GroundLayers,
+                    QueryTriggerInteraction.Ignore
+                );
+
+                for (int i = 0; i < count; i++)
+                {
+                    FloatingIsland island = _platformHits[i].GetComponentInParent<FloatingIsland>();
+
+                    if (island != null)
+                    {
+                        platform = island.transform;
+                        break;
+                    }
+                }
+            }
+
+            if (platform != null && platform == _currentPlatform)
+            {
+                Vector3 delta = platform.position - _platformLastPosition;
+
+                if (delta.sqrMagnitude > 0.0f)
+                {
+                    _controller.Move(delta);
+                }
+            }
+
+            _currentPlatform = platform;
+
+            if (platform != null)
+            {
+                _platformLastPosition = platform.position;
             }
         }
 

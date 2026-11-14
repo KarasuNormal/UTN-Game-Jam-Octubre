@@ -16,6 +16,8 @@ public class loadScenes : MonoBehaviour
     }
     public void LoadScenes(string scene)
     {
+        // Las pantallas de derrota/victoria/pausa dejan el tiempo en 0: se restablece al cambiar de escena
+        Time.timeScale = 1f;
         SceneManager.LoadScene(scene);
     }
     /*public void Pause()

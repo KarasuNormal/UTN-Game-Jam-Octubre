@@ -21,6 +21,11 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
+        // Si el juego termino (derrota/victoria pusieron el tiempo en 0) no se permite pausar/reanudar,
+        // porque reanudar dejaba seguir jugando con la pantalla de derrota abierta
+        if (!isPaused && Time.timeScale == 0f)
+            return;
+
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             TogglePause();
