@@ -1732,6 +1732,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OpenStartPanel
   pausePanel: {fileID: 1905921979}
   playerLookScript: {fileID: 1989956794}
+  addVolumeSliderToPausePanel: 1
+  menuVolumePosition: {x: 0, y: -370}
 --- !u!114 &274340723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12282,7 +12284,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 81368c2a9de920a49a4b8eb69c1f0590, type: 2}
     - target: {fileID: 6628753447497087311, guid: 6151d60be7dd14d448121109b34392a4, type: 3}
       propertyPath: riseSpeed
-      value: 0.3
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6628753447497087311, guid: 6151d60be7dd14d448121109b34392a4, type: 3}
+      propertyPath: startDelay
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 8233787900178949915, guid: 6151d60be7dd14d448121109b34392a4, type: 3}
       propertyPath: m_LocalScale.x
